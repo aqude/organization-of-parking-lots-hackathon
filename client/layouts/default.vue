@@ -1,14 +1,14 @@
-<script lang="ts" setup>
-
-</script>
+<script lang="ts" setup></script>
 
 <template>
-  <header class="__header"></header>
-  <main class="__main">
-    <slot />
-  </main>
+    <ClientHeader />
+    <main class="__main">
+        <slot />
+    </main>
 </template>
 
 <style lang="scss" scoped>
-
+main.__main {
+    padding: 2rem 0;
+}
 </style>
