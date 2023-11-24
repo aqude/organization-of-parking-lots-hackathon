@@ -41,7 +41,7 @@ services:
     build:
       context: nginx
     volumes:
-      - ./.htpasswd:/etc/nginx/conf.d/.htpasswd
+      #- ./.htpasswd:/etc/nginx/conf.d/.htpasswd
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - backend
@@ -60,6 +60,28 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=12345678
       - PGADMIN_LISTEN_ADDRESS=0.0.0.0  # чтобы не было косяков с nginx лушче в одну сеть с app
       - PGADMIN_LISTEN_PORT=5555
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  celery:
+    build:
+      context: backend
+    container_name: celery_app
+    command: [ "/code/docker_scripts/celery_run.sh" ]
+    env_file:
+      - backend/.env
+    depends_on:
+      - redis
+      - db
+    expose:
+      - 8000
     networks:
       - app-network
 

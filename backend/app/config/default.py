@@ -1,5 +1,5 @@
 from os import environ
-
+from decimal import Decimal
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from pydantic import BaseSettings
@@ -37,7 +37,20 @@ class DefaultSettings(BaseSettings):
     PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
     OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=f"{APP_HOST}:{APP_PORT}{PATH_PREFIX}/user/authentication")
 
+    One_Gradus = Decimal(63046.689652997775)
+    EART_RADIUS = Decimal(6371210)
+
     LOG_FILE: str = environ.get("LOG_FILE", "operations.log")
+
+    CELERY_BROKER_URL: str = environ.get(
+        "CELERY_BROKER_URL", "redis://127.0.0.1:6379/0"
+    )
+    CELERY_RESULT_BACKEND: str = environ.get(
+        "CELERY_BROKER_URL", "redis://127.0.0.1:6379/0"
+    )
+
+    YOOKASSA_ACCOUNT_ID: str = environ.get("YOOKASSA_ACCOUNT_ID", "")
+    YOOKASSA_SECRET_KEY: str = environ.get("YOOKASSA_SECRET_KEY", "")
 
     LOG_SECRET_KEY = Fernet.generate_key()
 

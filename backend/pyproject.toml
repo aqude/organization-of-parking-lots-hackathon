@@ -30,6 +30,9 @@ asgiref="3.7.2"
 cryptography = "41.0.3"
 fastapi-utils = "^0.2.1"
 python-dotenv = "^1.0.0"
+redis = "^4.5.4"
+celery = "^5.2.7"
+yookassa = "^2.5.0"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"

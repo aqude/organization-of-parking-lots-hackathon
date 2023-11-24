@@ -1,5 +1,6 @@
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy.dialects.postgresql import TEXT, INTEGER, TIMESTAMP
+from sqlalchemy.dialects.postgresql import TEXT, INTEGER, TIMESTAMP, FLOAT
+
 from app.db import DeclarativeBase
 
 
@@ -24,10 +25,16 @@ class Places(DeclarativeBase):
         nullable=False
     )
 
-    parking_address = Column(
-        'parking_address',
-        TEXT,
-        nullable=False,
+    parking_longitude = Column(
+        'parking_longitude',
+        FLOAT,
+        nullable=False
+    )
+
+    parking_latitude = Column(
+        'parking_latitude',
+        FLOAT,
+        nullable=False
     )
 
     number_of_place = Column(
@@ -46,4 +53,16 @@ class Places(DeclarativeBase):
         'time_occupied_to',
         TIMESTAMP(timezone=True),
         nullable=True
+    )
+
+    price_for_hour = Column(
+        "price_for_hour",
+        INTEGER,
+        nullable=False
+    )
+
+    type_of_parking = Column(
+        'type_of_parking',
+        TEXT,
+        nullable=False
     )

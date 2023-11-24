@@ -1,4 +1,5 @@
 from datetime import timedelta
+import uuid
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
 from fastapi.security import OAuth2PasswordRequestForm
@@ -8,9 +9,11 @@ from starlette import status
 from app.config import get_settings
 from app.db.connection import get_session
 from app.db.models import User
-from app.schemas.auth import RegistrationForm, RegistrationSuccess, Token
+from app.schemas.auth import RegistrationForm, RegistrationSuccess, Token, PaymentMethodIn
 from app.schemas.auth import User as UserSchema
 from app.utils.user import authenticate_user, create_access_token, delete_user, get_current_user, register_user
+from app.utils.payment.payment import confirm_payment
+from app.utils.payment import create_payment_method
 
 
 api_router = APIRouter(
@@ -98,3 +101,36 @@ async def takeout(
     session: AsyncSession = Depends(get_session),
 ):
     await delete_user(session, current_user)
+
+
+@api_router.post(
+    "/payment/method/add",
+    status_code=status.HTTP_200_OK,
+    response_model=dict,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Could not validate credentials",
+        },
+    },
+)
+async def add_payment_method(
+    _: Request,
+    payment_method: PaymentMethodIn = Body(...),
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    return {
+        "payment_url": await create_payment_method(
+            session, current_user, payment_method
+        )
+    }
+
+
+@api_router.get("/payment/method/check/{id}", status_code=status.HTTP_200_OK)
+async def check_payment_method(
+    _: Request,
+    id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    return {"response": await confirm_payment(session, current_user, id)}
