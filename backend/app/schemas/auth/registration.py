@@ -4,7 +4,9 @@ from app.config import get_settings
 
 
 class RegistrationForm(BaseModel):
-    username: constr(min_length=1)
+    first_name: constr(min_length=1)
+    second_name: constr(min_length=1)
+    last_name: constr(min_length=0)
     password: constr(min_length=8)
     email: EmailStr
 

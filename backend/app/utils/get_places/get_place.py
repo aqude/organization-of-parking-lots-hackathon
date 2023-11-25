@@ -1,6 +1,7 @@
 from typing import Optional
 import uuid
 from sqlalchemy import select, and_
+from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from app.db.models import Places

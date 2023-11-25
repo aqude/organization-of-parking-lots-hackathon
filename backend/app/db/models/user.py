@@ -7,14 +7,33 @@ from .base import BaseTable
 class User(BaseTable):
     __tablename__ = "user"
 
-    email = Column(
-        "email",
+    first_name = Column(
+        "first_name",
         TEXT,
         nullable=False,
-        unique=True,
+        unique=False,
         index=True,
-        doc="Email.",
+        doc="first_name for registration.",
     )
+
+    second_name = Column(
+        "second_name",
+        TEXT,
+        nullable=False,
+        unique=False,
+        index=True,
+        doc="second_name for registration.",
+    )
+
+    last_name = Column(
+        "last_name",
+        TEXT,
+        nullable=True,
+        unique=False,
+        index=True,
+        doc="last_name for registration.",
+    )
+
     password = Column(
         "password",
         TEXT,
@@ -23,15 +42,9 @@ class User(BaseTable):
         doc="Hashed password.",
     )
 
-    first_name = Column(
-        "first_name",
+    email = Column(
+        "email",
         TEXT,
         nullable=True,
         doc="User first name.",
-    )
-    last_name = Column(
-        "last_name",
-        TEXT,
-        nullable=True,
-        doc="User last name.",
     )

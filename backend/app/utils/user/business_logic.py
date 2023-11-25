@@ -18,8 +18,10 @@ async def authenticate_user(
     session: AsyncSession,
     username: str,
     password: str,
+    password: str
 ):
     user = await get_user(session, username)
+    user = await get_user(session, email)
     if not user:
         return False
     if not verify_password(password, user.password):
@@ -64,16 +66,15 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(
-            token, get_settings().SECRET_KEY, algorithms=[get_settings().ALGORITHM]
-        )
-        username: str = payload.get("sub")
-        if username is None:
+        payload = jwt.decode(token, get_settings().SECRET_KEY, algorithms=[get_settings().ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
     user = await get_user(session, username=token_data.username)
+    user = await get_user(session, email=token_data.email)
     if user is None:
         raise credentials_exception
     return user
@@ -85,4 +86,4 @@ def get_user_by_id(session: Session, user_id: int) -> User | None:
 
 async def get_payment_methods(session: AsyncSession, user: User) -> list[PaymentMethod]:
     query = select(PaymentMethod).where(PaymentMethod.user_id == user.id)
-    return await session.scalars(query)
+    return await session.scalars(query) 

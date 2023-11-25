@@ -2,7 +2,6 @@ from datetime import timedelta
 import uuid
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -45,10 +44,10 @@ api_router = APIRouter(
 )
 async def authentication(
     _: Request,
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    form_data: UserAuth = Body(..., example={"email": "user@example.com", "password": "stringst"}),
     session: AsyncSession = Depends(get_session),
 ):
-    user = await authenticate_user(session, form_data.username, form_data.password)
+    user = await authenticate_user(session, form_data.email, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -56,9 +55,7 @@ async def authentication(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=get_settings().ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
+    access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -118,7 +115,8 @@ async def takeout(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    await delete_user(session, current_user)
+
+    await delete_user(session, current_user.email)
 
 
 @api_router.post(
