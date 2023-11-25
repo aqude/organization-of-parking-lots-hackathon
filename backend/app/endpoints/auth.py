@@ -25,8 +25,11 @@ from app.utils.user import (
     register_user,
     get_payment_methods,
 )
-from app.utils.payment.payment import confirm_payment
-from app.utils.payment import create_payment_method
+from app.utils.payment import (
+    create_payment_method,
+    delete_payment_method_by_id,
+    confirm_payment,
+)
 
 
 api_router = APIRouter(
@@ -141,14 +144,19 @@ async def add_payment_method(
     }
 
 
-@api_router.get("/payment/method/check/{id}", status_code=status.HTTP_200_OK)
+@api_router.get(
+    "/payment/method/check/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=PaymentMethodOut,
+)
 async def check_payment_method(
     _: Request,
     id: uuid.UUID,
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    return {"response": await confirm_payment(session, current_user, id)}
+    result = await confirm_payment(session, current_user, id)
+    return PaymentMethodOut(type=result.type, title=result.title, id=result.id)
 
 
 @api_router.get(
@@ -156,10 +164,32 @@ async def check_payment_method(
     status_code=status.HTTP_200_OK,
     response_model=list[PaymentMethodOut],
 )
-async def get_payment_method(
+async def get_user_payment_methods(
     _: Request,
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
     result = list(await get_payment_methods(session, current_user))
-    return [PaymentMethodOut(type=item.type, title=item.title) for item in result]
+    return [
+        PaymentMethodOut(type=item.type, title=item.title, id=item.id)
+        for item in result
+    ]
+
+
+@api_router.delete(
+    "/payment/method/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Could not validate credentials",
+        },
+    },
+)
+async def delete_payment_method(
+    _: Request,
+    id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    await delete_payment_method_by_id(session, id, current_user)

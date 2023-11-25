@@ -26,7 +26,7 @@ class Payments(BaseTable):
 
     amount = Column(DECIMAL, nullable=False, doc="Payment amount.")
 
-    description = Column(String, nullable=False, doc="Payment description.")
+    description = Column(String, nullable=True, doc="Payment description.")
 
     is_paid = Column(BOOLEAN, default=False, doc="YooKassa paid status.")
 

@@ -4,7 +4,11 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
-from starlette.status import HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
+from starlette.status import (
+    HTTP_404_NOT_FOUND,
+    HTTP_403_FORBIDDEN,
+    HTTP_402_PAYMENT_REQUIRED,
+)
 from yookassa import Payment, Configuration, Refund
 
 from app.db.models import Payments as DBPayment, User
@@ -25,7 +29,6 @@ async def create_payment_method(
     return_id = uuid.uuid4()
     new_payment = DBPayment(user_id=user.id, id=return_id, amount=2, description="test")
     return_url = f"http://127.0.0.1:3000/payment_successful?id={return_id}"
-    print("test")
     payment = Payment.create(
         {
             "amount": {"value": 2.0, "currency": "RUB"},
@@ -38,7 +41,10 @@ async def create_payment_method(
             "save_payment_method": True,
         }
     )
-    print("test1")
+    if payment.status == "canceled":
+        raise HTTPException(
+            status_code=HTTP_402_PAYMENT_REQUIRED, detail="Payment canceled"
+        )
     new_payment.payment_id = payment.id
     new_payment.is_paid = payment.paid
     new_payment.status = payment.status
@@ -47,7 +53,9 @@ async def create_payment_method(
     return payment.confirmation.confirmation_url
 
 
-async def confirm_payment(session: AsyncSession, user: User, id: uuid.UUID) -> str:
+async def confirm_payment(
+    session: AsyncSession, user: User, id: uuid.UUID
+) -> PaymentMethod:
     query = select(DBPayment).where(DBPayment.id == id)
     payment: DBPayment = await session.scalar(query)
     if payment is None:
@@ -55,31 +63,29 @@ async def confirm_payment(session: AsyncSession, user: User, id: uuid.UUID) -> s
     if payment.user_id != user.id:
         raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Forbidden")
     payment_info = Payment.find_one(str(payment.payment_id))
-    if payment_info.status == "succeeded":
-        response = "Payment confirmed"
-        user.balance += payment.amount
-        payment.is_confirmed = True
-        new_payment_method = PaymentMethod(
-            user_id=user.id,
-            id=payment_info.payment_method.id,
-            title=payment_info.payment_method.title,
-            type=payment_info.payment_method.type,
+    if payment_info.status == "canceled":
+        raise HTTPException(
+            status_code=HTTP_402_PAYMENT_REQUIRED, detail="Payment canceled"
         )
-        refund = Refund.create(
-            {
-                "amount": {"value": "2.00", "currency": "RUB"},
-                "payment_id": str(payment.payment_id),
-            }
-        )
-        if refund.status == "canceled":
-            response = "Refund canceled: " + refund.cancellation_details.reason
-        session.add(new_payment_method)
-    else:
-        response = "Payment is still pending"
+    user.balance += payment.amount
+    payment.is_confirmed = True
+    new_payment_method = PaymentMethod(
+        user_id=user.id,
+        method_id=payment_info.payment_method.id,
+        title=payment_info.payment_method.title,
+        type=payment_info.payment_method.type,
+    )
+    refund = Refund.create(
+        {
+            "amount": {"value": "2.00", "currency": "RUB"},
+            "payment_id": str(payment.payment_id),
+        }
+    )
+    session.add(new_payment_method)
     payment.status = payment_info.status
     payment.is_paid = payment_info.paid
     await session.commit()
-    return response
+    return new_payment_method
 
 
 def create_payment(
@@ -102,3 +108,18 @@ def create_payment(
     new_payment.status = payment.status
     session.add(new_payment)
     return session, new_payment
+
+
+async def delete_payment_method_by_id(
+    session: AsyncSession, id: uuid.UUID, user: User
+) -> None:
+    query = select(PaymentMethod).where(PaymentMethod.id == id)
+    payment_method = await session.scalar(query)
+    if not payment_method:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND, detail="Payment method not found"
+        )
+    if payment_method.user_id != user.id:
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Forbidden")
+    await session.delete(payment_method)
+    await session.commit()
