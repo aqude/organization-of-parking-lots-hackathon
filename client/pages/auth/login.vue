@@ -25,7 +25,7 @@ const auth_token = useStorage("key", () => undefined)
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     const { username, password } = event.data;
-    const { data, error } = useAPI("/api/v1/user/authentication", {
+    const { data, error } = await useAPI("/api/v1/user/authentication", {
         body: {
             username: username,
             password: password,
