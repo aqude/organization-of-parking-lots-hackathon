@@ -12,6 +12,9 @@ export default defineNuxtConfig({
             mode: "out-in"
         }
     },
+    build: {
+        transpile: ['@fawmi/vue-google-maps']
+    },
     plugins: [
         { src: '../plugins/vue-google-maps.ts', ssr: false }
     ],
