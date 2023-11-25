@@ -10,5 +10,5 @@ export const useAPI = (request: ArgumentTypes<typeof useFetch>[0], opts: Argumen
 		headers: { ...opts.headers, ...customHeaders },
 	};
 
-	return useFetch(`http://localhost:80${request}`, mergedOpts);
+	return useFetch(`http://localhost${request}`, mergedOpts);
 };
