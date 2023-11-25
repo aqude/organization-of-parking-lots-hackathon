@@ -44,12 +44,12 @@ services:
     networks:
       - app-network
   
-  client:
+  frontend:
     build: 
       context: client
     ports:
       - "3000:3000"
-    container_name: front
+    container_name: frontend
     networks:
       - app-network
 
