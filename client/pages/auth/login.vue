@@ -20,28 +20,31 @@ const globalError = ref();
 const successfulResponse = ref();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    const { username , password } = event.data;
-    const { data, error } = useAPI("/api/v1/user/authentication", {
-        body: {
-            username: username,
-            password: password,
-        },
-        method: "post",
-    });
-    if (data.value) {
-      successfulResponse.value = "successfulResponse"
-      console.log(data.value)
-      console.log(successfulResponse.value)
-    } else {
-        switch (error.value?.statusCode) {
-            case 422:
-                globalError.value = "Неверный логин или пароль";
-            default:
-                globalError.value = "Произошла неизвестная ошибка...";
-        }
-		console.log(globalError.value)
+  const { username, password } = event.data;
+  const { data, error } = useAPI("/api/v1/user/authentication", {
+    body: JSON.stringify({
+      username: username,
+      password: password,
+    }),
+    method: "post",
+  });
+
+  if (data.value) {
+    successfulResponse.value = "successfulResponse";
+    console.log(data.value);
+    console.log(successfulResponse.value);
+  } else {
+    switch (error.value?.statusCode) {
+      case 422:
+        globalError.value = "Неверный логин или пароль";
+        break;
+      default:
+        globalError.value = "Произошла неизвестная ошибка...";
     }
+    console.log(globalError.value);
+  }
 }
+
 watch(state, () => globalError.value = undefined)
 </script>
 
