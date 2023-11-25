@@ -12,7 +12,7 @@ services:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: hackme
     volumes:
-      - ./pg_db:/var/lib/postgresql/data/
+      - pgdb-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     command: -p 5432 -c idle_session_timeout=600000
@@ -94,3 +94,5 @@ services:
 
 networks:
   app-network:
+volumes:
+  pgdb-data:
