@@ -3,11 +3,13 @@ import uuid
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
 from yookassa import Payment, Configuration, Refund
 
 from app.db.models import Payments as DBPayment, User
 from app.db.models import PaymentMethod
+from app.db.models.reservations import Reservations
 from app.schemas.auth.payment import PaymentMethodIn
 from app.config import get_settings
 
@@ -75,3 +77,25 @@ async def confirm_payment(session: AsyncSession, user: User, id: uuid.UUID) -> s
     payment.is_paid = payment_info.paid
     await session.commit()
     return response
+
+
+def create_payment(
+    session: Session, reservation: Reservations, user: User, amount: float
+) -> tuple[Session, DBPayment]:
+    return_id = uuid.uuid4()
+    new_payment = DBPayment(user_id=user.id, id=return_id, amount=amount)
+    payment = Payment.create(
+        {
+            "amount": {
+                "value": amount,
+                "currency": "RUB",
+            },
+            "capture": True,
+            "payment_method_id": reservation.payment_method_id,
+        }
+    )
+    new_payment.payment_id = payment.id
+    new_payment.is_paid = payment.paid
+    new_payment.status = payment.status
+    session.add(new_payment)
+    return session, new_payment

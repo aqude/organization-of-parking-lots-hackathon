@@ -5,8 +5,8 @@ from app.db.models import User
 from app.schemas.auth import RegistrationForm
 
 
-async def get_user(session: AsyncSession, username: str) -> User | None:
-    query = select(User).where(User.username == username)
+async def get_user(session: AsyncSession, email: str) -> User | None:
+    query = select(User).where(User.email == email)
     return await session.scalar(query)
 
 
@@ -20,7 +20,7 @@ async def register_user(session: AsyncSession, potential_user: RegistrationForm)
     return True, "Successful registration!"
 
 
-async def delete_user(session: AsyncSession, user: User) -> None:
-    query = delete(User).where(User.username == user.username)
+async def delete_user(session: AsyncSession, email: str) -> None:
+    query = delete(User).where(User.email == email)
     await session.execute(query)
     await session.commit()

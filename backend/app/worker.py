@@ -1,13 +1,21 @@
+import math
+from datetime import datetime, timedelta
 from app.config import get_settings
 from yookassa import Payment, Configuration
 from app.db.connection.session import get_sync_session
+from app.db.models.parking_places import Places
 from app.db.models.payments import Payments as DBPayment
+from app.db.models.reservations import Reservations
 from app.db.models.user import User
 from app.config import get_settings
 from celery import shared_task
+from app.utils.get_places.get_place import get_place_by_id
+from app.utils.payment import create_payment
 
 from celery import Celery
 from celery.schedules import crontab
+
+from app.utils.user.business_logic import get_user_by_id
 
 celery_app = Celery(
     __name__,
@@ -23,24 +31,44 @@ celery_app.conf.beat_schedule = {
 }
 
 celery_app.autodiscover_tasks()
-
-
 Configuration.account_id = get_settings().YOOKASSA_ACCOUNT_ID
 Configuration.secret_key = get_settings().YOOKASSA_SECRET_KEY
 
 
 @celery_app.task
-def confirm_payments():
+def check_reservations():
     session = get_sync_session()
 
-    payments: list[DBPayment] = (
-        session.query(DBPayment).filter(DBPayment.status == "pending").all()
+    reservations: list[Reservations] = (
+        session.query(Reservations)
+        .filter(
+            Reservations.occupied_to <= datetime.now(),
+            Reservations.occupied_to >= datetime.now() + timedelta(minutes=1),
+        )
+        .all()
     )
 
-    for payment in payments:
-        payment_info = Payment.find_one(str(payment.payment_id))
-        if payment_info.status == "succeeded":
+    for reservation in reservations:
+        payment = (
+            session.query(DBPayment)
+            .filter(DBPayment.id == reservation.payment_id)
+            .first()
+        )
+        if payment and payment.is_confirmed:
+            continue
+        place: Places = get_place_by_id(session, reservation.place_id)
+        amount = place.price_for_hour * (
+            math.ceil(
+                (reservation.occupied_to - reservation.occupied_from).seconds / 3600
+            )
+        )
+        user = get_user_by_id(session, reservation.user_id)
+        if not user:
+            continue
+
+        session, payment = create_payment(session, reservation, user, amount)
+        if payment.status == "succeeded" or payment.status == "pending":
             payment.is_confirmed = True
-        payment.status = payment_info.status
-        payment.is_paid = payment_info.paid
-    session.commit()
+            place.status = True
+            session.delete(reservation)
+            session.commit()

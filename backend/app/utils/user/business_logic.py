@@ -8,16 +8,16 @@ from starlette import status
 from .database import get_user
 from app.config import get_settings
 from app.db.connection import get_session
-from app.db.models import User
+from app.db.models import User, PaymentMethod
 from app.schemas.auth import TokenData
 
 
 async def authenticate_user(
     session: AsyncSession,
-    username: str,
-    password: str,
+    email: str,
+    password: str
 ):
-    user = await get_user(session, username)
+    user = await get_user(session, email)
     if not user:
         return False
     if not verify_password(password, user.password):
@@ -59,13 +59,22 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(token, get_settings().SECRET_KEY, algorithms=[get_settings().ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
-    user = await get_user(session, username=token_data.username)
+    user = await get_user(session, email=token_data.email)
     if user is None:
         raise credentials_exception
     return user
+
+
+def get_user_by_id(session: Session, user_id: int) -> User | None:
+    return session.query(User).filter(User.id == user_id).first()
+
+
+async def get_payment_methods(session: AsyncSession, user: User) -> list[PaymentMethod]:
+    query = select(PaymentMethod).where(PaymentMethod.user_id == user.id)
+    return await session.scalars(query)

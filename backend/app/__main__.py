@@ -1,5 +1,3 @@
-import time
-
 from fastapi import FastAPI
 from fastapi_pagination import add_pagination
 from uvicorn import run

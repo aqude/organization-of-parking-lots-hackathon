@@ -2,16 +2,16 @@ from datetime import timedelta
 import uuid
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.config import get_settings
 from app.db.connection import get_session
 from app.db.models import User
-from app.schemas.auth import RegistrationForm, RegistrationSuccess, Token, PaymentMethodIn
+from app.schemas.auth import RegistrationForm, RegistrationSuccess, Token, PaymentMethodIn, PaymentMethodOut
 from app.schemas.auth import User as UserSchema
-from app.utils.user import authenticate_user, create_access_token, delete_user, get_current_user, register_user
+from app.schemas.auth import UserAuth
+from app.utils.user import authenticate_user, create_access_token, delete_user, get_current_user, register_user, get_payment_methods
 from app.utils.payment.payment import confirm_payment
 from app.utils.payment import create_payment_method
 
@@ -29,10 +29,10 @@ api_router = APIRouter(
 )
 async def authentication(
     _: Request,
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    form_data: UserAuth = Body(..., example={"email": "user@example.com", "password": "stringst"}),
     session: AsyncSession = Depends(get_session),
 ):
-    user = await authenticate_user(session, form_data.username, form_data.password)
+    user = await authenticate_user(session, form_data.email, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -40,7 +40,7 @@ async def authentication(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=get_settings().ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -100,7 +100,8 @@ async def takeout(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    await delete_user(session, current_user)
+
+    await delete_user(session, current_user.email)
 
 
 @api_router.post(
@@ -134,3 +135,17 @@ async def check_payment_method(
     session: AsyncSession = Depends(get_session),
 ):
     return {"response": await confirm_payment(session, current_user, id)}
+
+
+@api_router.get(
+    "/payment/method/list",
+    status_code=status.HTTP_200_OK,
+    response_model=list[PaymentMethodOut],
+)
+async def get_payment_method(
+    _: Request,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    result = list(await get_payment_methods(session, current_user))
+    return [PaymentMethodOut(type=item.type, title=item.title) for item in result]
