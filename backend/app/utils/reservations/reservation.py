@@ -61,13 +61,7 @@ async def delete_reservation(data: ReservationDelete, user: User, db: Session):
             status_code=HTTP_404_NOT_FOUND, detail="Reservation not found"
         )
     amount = reservation.parking.price * (
-        math.ceil(
-            (
-                datetime.now(tz=pytz.UTC)
-                - reservation.start_time.replace(tzinfo=pytz.UTC)
-            ).seconds
-            / 3600
-        )
+        math.ceil((datetime.now() - reservation.start_time).seconds / 3600)
     )
 
     return_id = uuid.uuid4()
