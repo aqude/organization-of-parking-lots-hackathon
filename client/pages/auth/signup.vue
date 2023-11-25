@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { object, string, type InferType } from "yup";
 import type { FormError, FormSubmitEvent } from "#ui/types";
+import { useStorage } from '@vueuse/core'
 let requiredField = "Обязательное поле";
 const schema = object({
     email: string().email("Неверный Email").required(requiredField),
@@ -23,26 +24,23 @@ const state = reactive({
 });
 
 const globalError = ref();
-const successfulResponse = ref();
+
+const auth_token = useStorage("key", () => undefined)
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     const { email, password, first_name, second_name, last_name } = event.data;
     const { data, error } = useAPI("/api/v1/user/registration", {
-        body: JSON.stringify({
+        body: {
           first_name: first_name,
           second_name: second_name,
           last_name: last_name,
           email: email,
           password: password,
-        }),
+        },
         method: "post",
     });
-
-	console.log(event.data)
     if (data.value) {
-      successfulResponse.value = "successfulResponse"
       console.log(data.value)
-      console.log(successfulResponse.value)
     } else {
         switch (error.value?.statusCode) {
             case 422:
