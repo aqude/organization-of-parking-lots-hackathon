@@ -1,35 +1,39 @@
 <script lang="ts" setup>
 import { object, string, type InferType } from "yup";
 import type { FormError, FormSubmitEvent } from "#ui/types";
-
+let requiredField = "Обязательное поле";
 const schema = object({
-    email: string().email("Неверный Email").required("Обязательное поле"),
+    email: string().email("Неверный Email").required(requiredField),
     password: string()
         .min(8, "Слишком короткий пароль")
-        .required("Обязательное поле"),
+        .required(requiredField),
+  name: string().required(requiredField),
+  surname: string().required(requiredField),
 });
 
 type Schema = InferType<typeof schema>;
 
 const state = reactive({
+    name: undefined,
+    surname: undefined,
     email: undefined,
     password: undefined,
-    phone: undefined,
 });
 
 const globalError = ref();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    const { email, password, phone } = event.data;
+    const { email, password, name, surname } = event.data;
     const { data, error } = useAPI("/api/v1/user/registration", {
         body: {
-            phone: phone,
+            name: name,
+            surname: surname,
             email: email,
             password: password,
         },
         method: "post",
     });
-	console.log(data.value)
+	console.log(event.data)
     if (data.value) {
     } else {
         switch (error.value?.statusCode) {
@@ -49,11 +53,22 @@ watch(state, () => globalError.value = undefined)
         <UForm
             :schema="schema"
             :state="state"
-            class="flex flex-col space-y-4 form-wrapper"
+            class="flex flex-col space-y-4 w-80"
             @submit="onSubmit"
         >
-            <h1 class="text-center text-3xl">Регистрация</h1>
-            <hr style="border-color: rgb(var(--color-primary-DEFAULT) / 0.8);">
+          <div class="flex flex-row justify-between text-xl pt-10">
+            <h1 class="">Регистрация</h1>
+            <nuxt-link to="/auth/login">
+              <h1 style="color: #22C55E" class="">Вход</h1>
+            </nuxt-link>
+          </div>
+          <h2>Пожалуйста, заполните нижеприведённые поля для входа в приложение</h2>
+          <UFormGroup label="Имя" name="name">
+            <UInput placeholder="Иван" v-model="state.name" />
+          </UFormGroup>
+          <UFormGroup label="Фамилия" name="surname">
+            <UInput placeholder="Иванов" v-model="state.surname" />
+          </UFormGroup>
             <UFormGroup label="Email" name="email">
                 <UInput placeholder="example@mail.ru" v-model="state.email" />
             </UFormGroup>
@@ -64,8 +79,7 @@ watch(state, () => globalError.value = undefined)
 			<Transition name="error">
 				<p v-show="globalError" class="h-6 text-red-400 mt-4">{{ globalError }}</p>
 			</Transition>
-
-            <UButton type="submit" class="w-fit">Войти</UButton>
+            <UButton type="submit" class="grid justify-items-center w-80 mx-auto h-10 text-lg">Зарегистрироваться</UButton>
         </UForm>
     </div>
 </template>

@@ -47,12 +47,17 @@ watch(state, () => globalError.value = undefined)
         <UForm
             :schema="schema"
             :state="state"
-            class="flex flex-col space-y-4 form-wrapper"
+            class="flex flex-col space-y-4 w-80"
             @submit="onSubmit"
         >
-            <h1 class="text-center text-3xl">Вход</h1>
-            <hr style="border-color: rgb(var(--color-primary-DEFAULT) / 0.8);">
-            <UFormGroup label="Email" name="email">
+          <div class="flex flex-row justify-between text-xl pt-10">
+            <h1 class="">Вход</h1>
+            <nuxt-link to="/auth/signup">
+              <h1 style="color: #22C55E" class="">Регистрация</h1>
+            </nuxt-link>
+          </div>
+          <h2>Пожалуйста, заполните нижеприведённые поля для входа в приложение</h2>
+            <UFormGroup label="E-mail" name="email">
                 <UInput placeholder="example@mail.ru" v-model="state.email" />
             </UFormGroup>
 
@@ -60,10 +65,9 @@ watch(state, () => globalError.value = undefined)
                 <UInput v-model="state.password" type="password" />
             </UFormGroup>
 			<Transition name="error">
-				<p v-show="globalError" class="h-6 text-red-400 mt-4">{{ globalError }}</p>
+				<p v-show="globalError" class="h-6 text-red-300 mt-4">{{ globalError }}</p>
 			</Transition>
-
-            <UButton type="submit" class="w-fit">Войти</UButton>
+            <UButton type="submit" class="grid justify-items-center w-80 mx-auto h-10 text-lg">Войти</UButton>
         </UForm>
     </div>
 </template>
@@ -81,7 +85,6 @@ watch(state, () => globalError.value = undefined)
         padding: 2rem;
     }
 }
-
 .error-enter-active, .error-leave-active {
 	transition: all 0.3s;
 }
