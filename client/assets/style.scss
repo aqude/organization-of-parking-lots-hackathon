@@ -1,0 +1,20 @@
+:root {
+    overflow-x: hidden;
+}
+
+
+// Page transitions
+
+.page-enter-from {
+    translate: 100% 0;
+    filter: contrast(0);
+}
+
+.page-leave-to {
+    translate: -100% 0;
+    filter: contrast(0);
+}
+
+.page-enter-active, .page-leave-active {
+    transition: all 0.6s ease-in-out;
+}
