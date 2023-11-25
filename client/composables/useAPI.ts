@@ -1,6 +1,6 @@
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any ? A : never;
 
-export const useAPI = (request: ArgumentTypes<typeof useFetch>[0], opts?: ArgumentTypes<typeof useFetch>[1] & { headers?: Record<string, string> }, body_process?: boolean) => {
+export const useAPI = async (request: ArgumentTypes<typeof useFetch>[0], opts?: ArgumentTypes<typeof useFetch>[1] & { headers?: Record<string, string> }, body_process?: boolean) => {
 	const customHeaders = {
 		"Content-Type": "application/x-www-form-urlencoded",
 	};
@@ -11,5 +11,5 @@ export const useAPI = (request: ArgumentTypes<typeof useFetch>[0], opts?: Argume
 		headers: opts ? (body_process ? { ...opts.headers, ...customHeaders } : undefined) : undefined,
 	};
 
-	return useFetch(`http://localhost${request}`, mergedOpts ? mergedOpts : undefined);
+	return await useFetch(`http://localhost${request}`, mergedOpts ? mergedOpts : undefined);
 };
