@@ -35,6 +35,7 @@ const focusOnMarker = (marker) => {
 </script>
 <template>
     <ClientOnly>
+    <Icon name="solar:user-bold" class="iconClient"/>
         <GMapMap
             class="map"
             :center="center"
@@ -47,8 +48,7 @@ const focusOnMarker = (marker) => {
                 streetViewControl: true,
                 rotateControl: true,
                 fullscreenControl: false,
-            }"
-        >
+            }">
             <GMapCluster :zoomOnClick="true">
                 <GMapMarker
                     v-for="(marker, index) in locations"
@@ -71,5 +71,13 @@ const focusOnMarker = (marker) => {
 .map {
     position: relative;
     height: 100vh;
+}
+.iconClient {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  padding: 10px;
+  z-index: 2;
+  right: 0;
 }
 </style>
