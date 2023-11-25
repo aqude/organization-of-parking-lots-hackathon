@@ -35,7 +35,7 @@ class DefaultSettings(BaseSettings):
 
     SERVICE_NAME: str = environ.get("SERVICE_NAME", "")
     PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=f"/api/user/authentication")
+    OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl=f"/api/v1/user/authentication")
 
     One_Gradus = Decimal(63046.689652997775)
     EART_RADIUS = Decimal(6371210)
