@@ -16,3 +16,4 @@ class Places(BaseTable):
     price = Column("price_for_hour", DECIMAL, nullable=False)
     description = Column("type_of_parking", TEXT, nullable=False)
     reservations = relationship("Reservations", back_populates="parking")
+    street_name = Column("street_name", TEXT, nullable=True)
