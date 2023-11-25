@@ -22,10 +22,10 @@ const successfulResponse = ref();
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   const { username, password } = event.data;
   const { data, error } = useAPI("/api/v1/user/authentication", {
-    body: JSON.stringify({
+    body: {
       username: username,
       password: password,
-    }),
+    },
     method: "post",
   });
 

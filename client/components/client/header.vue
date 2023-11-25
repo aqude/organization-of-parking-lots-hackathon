@@ -29,6 +29,10 @@ header {
     display: flex;
     gap: 1rem;
     justify-content: space-between;
+    pointer-events: none;
+    * {
+        pointer-events: all;
+    }
     .btn {
         aspect-ratio: 1;
         display: flex;
