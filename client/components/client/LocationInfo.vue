@@ -1,46 +1,60 @@
 <script setup>
-const focused = useState("global_marker", () => {})
+const focused = useState("global_marker", () => {});
+
+const fullscreen = ref(false);
 </script>
 
 <template>
-    <Transition name="frame">
-      <div class="flex items-center justify-center" v-show="focused">
-        <div class="__location-info">
-          <div class="row flex flex-row justify-between">
-            <div class="half-column flex flex-col">
-              <a class="text-xl font-semibold">Зона {{ focused.id }}</a>
-              <a>ул. Высоковольтная, 123</a>
+    <div class="__location-info" v-if="focused" :style="{ height: fullscreen ? '90%' : 'unset'}">
+        <!-- <div class="rounded-full bg-white opacity-30 w-10 h-1"/> -->
+        <div class="flex w-full justify-between">
+            <div class="flex flex-col">
+                <p class="text-xl font-semibold">Зона {{ focused.id }}</p>
+                <p>{{ focused.address }}</p>
             </div>
-            <div class="half-column flex flex-col justify-center items-center">
-              <a class="text-xl font-semibold">45</a>
-              <a>руб/час</a>
+            <div class="flex flex-col justify-center items-center">
+                <p class="text-xl font-semibold">{{ focused.price }}</p>
+                <p>руб/час</p>
             </div>
-          </div>
-          <UButton class="grid justify-items-center w-80 mx-auto text-lg mt-5">Забронировать</UButton>
         </div>
-      </div>
-    </Transition>
+        <hr class="border-white w-10/12">
+        <template v-if="!fullscreen">
+            <UButton
+                class="grid justify-items-center w-80 mx-auto text-lg"
+                @click="fullscreen = true"
+                >Забронировать</UButton
+            >
+        </template>
+        <template v-else>
+            <UButton
+                class="grid justify-items-center w-80 mx-auto text-lg"
+                @click="fullscreen = false"
+                color="black"
+                variant="outline"
+                >Отмена</UButton
+            >
+        </template>
+    </div>
 </template>
 
 <style lang="scss" scoped>
 .__location-info {
-  position: absolute;
-  z-index: 2;
-  bottom: 0;
-  background-color: rgba(15, 15, 15);
-  max-width: 800px;
-  width: 100%;
-  padding: 20px;
-}
-
-
-.frame-enter-from, .frame-leave-to {
-    top: 100%;
-}
-
-@media (max-width: 800px) {
-    .__location-info {
-        translate: unset;
-    }
+    position: fixed;
+    z-index: 2;
+    bottom: 0;
+    background-color: rgba(15, 15, 15, 0.9);
+    backdrop-filter: blur(0.5rem);
+    max-width: 800px;
+    width: 100%;
+    padding: 20px;
+    border-radius: 1rem 1rem 0 0;
+    left: 50%;
+    translate: -50% 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    height: 10rem;
+    transition: all 0.3s;
 }
 </style>
