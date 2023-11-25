@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-
+const add_method = () => {
+    const { data: { value } } = useAPI("/api/v1/user/payment/method/add")
+    console.log(value)
+}
 </script>
 
 <template>
@@ -10,7 +13,7 @@
         </div>
         <div class="add">
             <h2 class="text-3xl">Добавить метод</h2>
-            <UButton size="xl" variant="soft">
+            <UButton size="xl" variant="soft" @click="add_method">
                 <Icon name="i-fluent-emoji-credit-card" />
                 Банковская карта
             </UButton>
