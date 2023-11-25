@@ -3,7 +3,16 @@ export default defineNuxtConfig({
         enabled: true
     },
     modules: ["@nuxt/ui", "nuxt-icon"],
-plugins: [
+    css: [
+        "@/assets/style.scss"
+    ],
+    app: {
+        pageTransition: {
+            name: "page",
+            mode: "out-in"
+        }
+    },
+    plugins: [
         { src: '../plugins/vue-google-maps.ts', ssr: false }
     ],
 })
