@@ -3,7 +3,7 @@ import { object, string, type InferType } from "yup";
 import type { FormError, FormSubmitEvent } from "#ui/types";
 
 const schema = object({
-    email: string().email("Неверный Email").required("Обязательное поле"),
+    username : string().email("Неверный Email").required("Обязательное поле"),
     password: string()
         .min(8, "Слишком короткий пароль")
         .required("Обязательное поле"),
@@ -12,23 +12,26 @@ const schema = object({
 type Schema = InferType<typeof schema>;
 
 const state = reactive({
-    email: undefined,
-    password: undefined,
+  username : undefined,
+  password: undefined,
 });
 
 const globalError = ref();
+const successfulResponse = ref();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    const { email, password } = event.data;
+    const { username , password } = event.data;
     const { data, error } = useAPI("/api/v1/user/authentication", {
         body: {
-            username: email,
+            username: username,
             password: password,
         },
         method: "post",
     });
-	console.log(data.value)
     if (data.value) {
+      successfulResponse.value = "successfulResponse"
+      console.log(data.value)
+      console.log(successfulResponse.value)
     } else {
         switch (error.value?.statusCode) {
             case 422:
@@ -58,7 +61,7 @@ watch(state, () => globalError.value = undefined)
           </div>
           <h2>Пожалуйста, заполните нижеприведённые поля для входа в приложение</h2>
             <UFormGroup label="E-mail" name="email">
-                <UInput placeholder="example@mail.ru" v-model="state.email" />
+                <UInput placeholder="example@mail.ru" v-model="state.username"/>
             </UFormGroup>
 
             <UFormGroup label="Пароль" name="password">

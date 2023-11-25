@@ -7,34 +7,42 @@ const schema = object({
     password: string()
         .min(8, "Слишком короткий пароль")
         .required(requiredField),
-  name: string().required(requiredField),
-  surname: string().required(requiredField),
+  first_name: string().required(requiredField),
+  second_name: string().required(requiredField),
+  last_name: string().required(requiredField),
 });
 
 type Schema = InferType<typeof schema>;
 
 const state = reactive({
-    name: undefined,
-    surname: undefined,
-    email: undefined,
-    password: undefined,
+  first_name: undefined,
+  second_name: undefined,
+  last_name: undefined,
+  email: undefined,
+  password: undefined,
 });
 
 const globalError = ref();
+const successfulResponse = ref();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    const { email, password, name, surname } = event.data;
+    const { email, password, first_name, second_name, last_name } = event.data;
     const { data, error } = useAPI("/api/v1/user/registration", {
         body: {
-            name: name,
-            surname: surname,
-            email: email,
-            password: password,
+          first_name: first_name,
+          second_name: second_name,
+          last_name: last_name,
+          email: email,
+          password: password,
         },
         method: "post",
     });
+
 	console.log(event.data)
     if (data.value) {
+      successfulResponse.value = "successfulResponse"
+      console.log(data.value)
+      console.log(successfulResponse.value)
     } else {
         switch (error.value?.statusCode) {
             case 422:
@@ -63,11 +71,14 @@ watch(state, () => globalError.value = undefined)
             </nuxt-link>
           </div>
           <h2>Пожалуйста, заполните нижеприведённые поля для входа в приложение</h2>
-          <UFormGroup label="Имя" name="name">
-            <UInput placeholder="Иван" v-model="state.name" />
+          <UFormGroup label="Имя" name="first_name">
+            <UInput placeholder="Иван" v-model="state.first_name" />
           </UFormGroup>
-          <UFormGroup label="Фамилия" name="surname">
-            <UInput placeholder="Иванов" v-model="state.surname" />
+          <UFormGroup label="Фамилия" name="second_name">
+            <UInput placeholder="Иванов" v-model="state.second_name" />
+          </UFormGroup>
+          <UFormGroup label="Отчество" name="last_name">
+            <UInput placeholder="Иванович" v-model="state.last_name" />
           </UFormGroup>
             <UFormGroup label="Email" name="email">
                 <UInput placeholder="example@mail.ru" v-model="state.email" />
