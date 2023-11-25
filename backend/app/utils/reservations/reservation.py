@@ -49,6 +49,7 @@ async def create_reservation(data: ReservationIn, user: User, db: Session):
     db.add(reservation)
     place.number_of_places -= 1
     db.commit()
+    db.refresh(reservation)
     return reservation
 
 
@@ -92,3 +93,7 @@ async def delete_reservation(data: ReservationDelete, user: User, db: Session):
     reservation.parking.number_of_places += 1
     db.delete(reservation)
     db.commit()
+
+
+async def get_reservations(user: User, db: Session):
+    return db.query(Reservations).filter(Reservations.user_id == user.id).all()
