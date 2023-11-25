@@ -25,11 +25,11 @@ const state = reactive({
 
 const globalError = ref();
 
-const auth_token = useStorage("key", () => undefined)
+const router = useRouter()
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     const { email, password, first_name, second_name, last_name } = event.data;
-    const { data, error } = useAPI("/api/v1/user/registration", {
+    const { data, error } = await useAPI("/api/v1/user/registration", {
         body: {
           first_name: first_name,
           second_name: second_name,
@@ -40,7 +40,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         method: "post",
     });
     if (data.value) {
-      console.log(data.value)
+		  router.push("/login")
     } else {
         switch (error.value?.statusCode) {
             case 422:
@@ -48,7 +48,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             default:
                 globalError.value = "Произошла неизвестная ошибка...";
         }
-		console.log(globalError.value)
     }
 }
 watch(state, () => globalError.value = undefined)
