@@ -7,6 +7,7 @@ export const useAPI = (request: ArgumentTypes<typeof useFetch>[0], opts?: Argume
 
 	const mergedOpts = {
 		...opts,
+		body: opts ? new URLSearchParams(Object.entries(opts.body as any)).toString() : undefined,
 		headers: opts ? { ...opts.headers, ...customHeaders } : undefined,
 	};
 
