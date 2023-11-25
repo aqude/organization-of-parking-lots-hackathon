@@ -3,7 +3,7 @@ const focused = useState("global_marker", () => {});
 
 const fullscreen = ref(false);
 
-watchEffect(() => { if (!focused.value) fullscreen.value = false; })
+watchEffect(() => { if (!focused.value) setTimeout(() => fullscreen.value = false, 1000); })
 </script>
 
 <template>
@@ -35,6 +35,7 @@ watchEffect(() => { if (!focused.value) fullscreen.value = false; })
                 variant="outline"
                 >Отмена</UButton
             >
+            <ClientPaymentMethods />
         </template>
     </div>
 </template>
@@ -58,6 +59,7 @@ watchEffect(() => { if (!focused.value) fullscreen.value = false; })
     height: 10rem;
     transition: all 0.3s ease-in-out;
     padding-bottom: 0;
+    overflow-y: auto;
     &.details {
         padding-bottom: 75vh;
     }
