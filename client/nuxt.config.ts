@@ -3,7 +3,7 @@ export default defineNuxtConfig({
         enabled: true
     },
     modules: ["@nuxt/ui"],
-    plugins: [
-        { src: '../plugins/vue-yandex-maps.ts', ssr: false }
+plugins: [
+        { src: '../plugins/vue-google-maps.ts', ssr: false }
     ],
 })

@@ -91,7 +91,6 @@ watch(state, () => globalError.value = undefined)
 	opacity: 0;
 	height: 0;
 	width: fit-content;
-	translate: -100% 0;
 	margin: 0 !important;
     overflow: hidden;
 }

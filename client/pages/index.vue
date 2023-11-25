@@ -4,7 +4,8 @@
 
 <template>
     <div class="__home">
-        <h1>Home</h1>
+        <ClientLocationInfo />
+        <ClientGoogleMaps />
     </div>
 </template>
 
