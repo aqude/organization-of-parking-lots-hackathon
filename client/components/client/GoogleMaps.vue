@@ -6,6 +6,7 @@ const locations = ref([
             lat: 56.84309925140014,
             lng: 60.645409215528794,
         },
+        positionName: "",
     },
     {
         id: 2,
@@ -32,23 +33,24 @@ const focusOnMarker = (marker) => {
     zoom.value = 15;
     focusedMarker.value = marker
 };
+let gmapOptions = {
+  zoomControl: false,
+  mapTypeControl: false,
+  scaleControl: false,
+  streetViewControl: false,
+  rotateControl: true,
+  fullscreenControl: false,
+}
+
 </script>
 <template>
     <ClientOnly>
-    <Icon name="solar:user-bold" class="iconClient"/>
         <GMapMap
             class="map"
             :center="center"
-            map-type-id="hybrid"
+            map-type-id="roadmap"
             :zoom="zoom"
-            :options="{
-                zoomControl: true,
-                mapTypeControl: false,
-                scaleControl: false,
-                streetViewControl: true,
-                rotateControl: true,
-                fullscreenControl: false,
-            }">
+            :options="gmapOptions">
             <GMapCluster :zoomOnClick="true">
                 <GMapMarker
                     v-for="(marker, index) in locations"
@@ -71,13 +73,5 @@ const focusOnMarker = (marker) => {
 .map {
     position: relative;
     height: 100vh;
-}
-.iconClient {
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  padding: 10px;
-  z-index: 2;
-  right: 0;
 }
 </style>

@@ -4,34 +4,35 @@ const focused = useState("global_marker", () => {})
 
 <template>
     <Transition name="frame">
-        <div class="__location-info" v-show="focused">
-            <p>Тут немного инфы о парковочном месте и кнопка на страницу "бронирование"</p>
-            <br>
-            <a href="https://nuxt.com/docs/guide/directory-structure/pages" class="text-blue-400">Инфа по страницам в nuxt</a>
-            <br>
-            <a href="https://vue-map.netlify.app/" class="text-blue-400">Библиотка для Google карт</a>
-            <br>
-            <br>
-            <p>{{ focused }}</p>
+      <div class="flex items-center justify-center" v-show="focused">
+        <div class="__location-info">
+          <div class="row flex flex-row justify-between">
+            <div class="half-column flex flex-col">
+              <a class="text-xl font-semibold">Зона {{ focused.id }}</a>
+              <a>ул. Высоковольтная, 123</a>
+            </div>
+            <div class="half-column flex flex-col justify-center items-center">
+              <a class="text-xl font-semibold">45</a>
+              <a>руб/час</a>
+            </div>
+          </div>
+          <UButton class="grid justify-items-center w-80 mx-auto text-lg mt-5">Забронировать</UButton>
         </div>
+      </div>
     </Transition>
 </template>
 
 <style lang="scss" scoped>
 .__location-info {
-    position: fixed;
-    left: 50%;
-    bottom: 0;
-    z-index: 10;
-    margin-bottom: 2rem;
-    border-radius: 1rem;
-    background-color: rgba(15,15,15);
-    padding: 1rem;
-    width: 30rem;
-    max-width: calc(100% - 5rem);
-    translate: -50% 0;
-    top: unset;
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  background-color: rgba(15, 15, 15);
+  max-width: 800px;
+  width: 100%;
+  padding: 20px;
 }
+
 
 .frame-enter-from, .frame-leave-to {
     top: 100%;
@@ -39,7 +40,6 @@ const focused = useState("global_marker", () => {})
 
 @media (max-width: 800px) {
     .__location-info {
-        left: 1rem;
         translate: unset;
     }
 }
