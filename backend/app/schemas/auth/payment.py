@@ -16,3 +16,20 @@ class PaymentMethodIn(BaseModel):
         "mobile_balance",
         "cash",
     ]
+
+
+class PaymentMethodOut(BaseModel):
+    type: Literal[
+        "bank_card",
+        "yoo_money",
+        "qiwi",
+        "sberbank",
+        "tinkoff_bank",
+        "sbp",
+        "installments",
+        "sber_loan",
+        "b2b_sberbank",
+        "mobile_balance",
+        "cash",
+    ]
+    title: str

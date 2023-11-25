@@ -13,4 +13,10 @@ class PaymentMethod(BaseTable):
         nullable=False,
         doc="ID of user.",
     )
-    title = Column(String(100))
+    title = Column(
+        String(100),
+        index=True,
+        unique=True,
+        nullable=False,
+        doc="Payment method title.",
+    )

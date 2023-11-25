@@ -1,7 +1,7 @@
 from .user import User
 from .token import Token, TokenData
 from .registration import RegistrationForm, RegistrationSuccess
-from .payment import PaymentMethodIn
+from .payment import PaymentMethodIn, PaymentMethodOut
 
 
 __all__ = [
@@ -10,5 +10,6 @@ __all__ = [
     "TokenData",
     "RegistrationSuccess",
     "RegistrationForm",
-    "PaymentMethodIn"
+    "PaymentMethodIn",
+    "PaymentMethodOut",
 ]

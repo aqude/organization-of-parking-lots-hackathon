@@ -19,13 +19,10 @@ api_router = APIRouter(
     "/get_places",
     status_code=status.HTTP_200_OK,
 )
-async def getplaces(
-    _: Request,
-    session: AsyncSession = Depends(get_session)
-):
+async def getplaces(_: Request, session: AsyncSession = Depends(get_session)):
     result = list(await get_places(session))
     if not result:
-        raise HTTPException(status_code=status.HTTP_404_BAD_REQUEST, detail="not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
     return result
 
 
@@ -36,12 +33,22 @@ async def getplaces(
 async def getplace(
     _: Request,
     session: AsyncSession = Depends(get_session),
-    data: GetPlaceReq = Body(..., example={"City": "Белгород", "City_id": 113, "number_of_place": 1, "parking_longitude": 35.423,
-                                            "parking_latitude": 34.433})
+    data: GetPlaceReq = Body(
+        ...,
+        example={
+            "City": "Белгород",
+            "City_id": 113,
+            "number_of_place": 1,
+            "parking_longitude": 35.423,
+            "parking_latitude": 34.433,
+        },
+    ),
 ):
     result = list(await get_place(session, data))
     if not result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data"
+        )
     return result
 
 
@@ -52,10 +59,13 @@ async def getplace(
 async def get_places_radius(
     _: Request,
     session: AsyncSession = Depends(get_session),
-    data: GetPlacesRadReq = Body(..., example={"City_id": 113, "radius": 500, "lon": 35.423,
-                                            "lat": 34.433})
+    data: GetPlacesRadReq = Body(
+        ..., example={"City_id": 113, "radius": 500, "lon": 35.423, "lat": 34.433}
+    ),
 ):
     result = list(await get_places_in_radius(session, data, get_settings()))
     if not result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data"
+        )
     return result

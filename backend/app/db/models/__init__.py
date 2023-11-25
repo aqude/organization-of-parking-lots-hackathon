@@ -3,6 +3,7 @@ from .parking_places import Places
 from .cities import Cities
 from .payments import Payments
 from .payment_methods import PaymentMethod
+from .reservations import Reservations
 
 
 __all__ = [
@@ -10,5 +11,6 @@ __all__ = [
     "Places",
     "Cities",
     "Payments",
-    "PaymentMethod"
+    "PaymentMethod",
+    "Reservations",
 ]
