@@ -43,7 +43,6 @@ const fullscreen = ref(false);
     z-index: 2;
     bottom: 0;
     background-color: rgba(15, 15, 15, 0.9);
-    backdrop-filter: blur(0.5rem);
     max-width: 800px;
     width: 100%;
     padding: 20px;
