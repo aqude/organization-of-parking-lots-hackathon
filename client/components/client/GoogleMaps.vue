@@ -46,6 +46,7 @@ let gmapOptions = {
 <template>
     <ClientOnly>
         <GMapMap
+            @click="focusedMarker = undefined"
             class="map"
             :center="center"
             map-type-id="roadmap"
