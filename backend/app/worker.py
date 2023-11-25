@@ -42,33 +42,22 @@ def check_reservations():
     reservations: list[Reservations] = (
         session.query(Reservations)
         .filter(
-            Reservations.occupied_to <= datetime.now(),
-            Reservations.occupied_to >= datetime.now() + timedelta(minutes=1),
+            Reservations.end_time <= datetime.now(),
+            Reservations.end_time >= datetime.now() + timedelta(minutes=1),
         )
         .all()
     )
 
     for reservation in reservations:
-        payment = (
-            session.query(DBPayment)
-            .filter(DBPayment.id == reservation.payment_id)
-            .first()
+        place: Places = reservation.parking
+        amount = place.price * (
+            math.ceil((reservation.start_time - reservation.end_time).seconds / 3600)
         )
-        if payment and payment.is_confirmed:
-            continue
-        place: Places = get_place_by_id(session, reservation.place_id)
-        amount = place.price_for_hour * (
-            math.ceil(
-                (reservation.occupied_to - reservation.occupied_from).seconds / 3600
-            )
+        session, payment = create_payment(
+            session, reservation, reservation.user, amount
         )
-        user = get_user_by_id(session, reservation.user_id)
-        if not user:
-            continue
-
-        session, payment = create_payment(session, reservation, user, amount)
         if payment.status == "succeeded" or payment.status == "pending":
             payment.is_confirmed = True
-            place.status = True
             session.delete(reservation)
+            place.number_of_places += 1
             session.commit()

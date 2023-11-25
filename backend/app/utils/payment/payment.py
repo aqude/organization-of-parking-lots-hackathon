@@ -27,7 +27,7 @@ async def create_payment_method(
     session: AsyncSession, user: User, payment_method: PaymentMethodIn
 ) -> str:
     return_id = uuid.uuid4()
-    new_payment = DBPayment(user_id=user.id, id=return_id, amount=2, description="test")
+    new_payment = DBPayment(user_id=user.id, id=return_id, amount=2)
     return_url = f"http://127.0.0.1:3000/payment_successful?id={return_id}"
     payment = Payment.create(
         {
