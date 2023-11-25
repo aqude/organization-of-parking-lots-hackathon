@@ -13,7 +13,6 @@ class Payments(BaseTable):
         nullable=False,
         doc="ID of user",
     )
-
     payment_id = Column(
         UUID(as_uuid=True),
         index=True,
@@ -23,13 +22,9 @@ class Payments(BaseTable):
     )
 
     status = Column(String, nullable=False, doc="Payment status.")
-
     amount = Column(DECIMAL, nullable=False, doc="Payment amount.")
-
     description = Column(String, nullable=True, doc="Payment description.")
-
     is_paid = Column(BOOLEAN, default=False, doc="YooKassa paid status.")
-
     is_confirmed = Column(
         BOOLEAN, default=False, doc="YooKassa status of confirmation."
     )

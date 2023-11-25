@@ -1,5 +1,6 @@
 from sqlalchemy import INTEGER, TIMESTAMP, ForeignKey, Column, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from app.db.models.base import BaseTable
 
@@ -14,32 +15,28 @@ class Reservations(BaseTable):
         doc="ID of user.",
         unique=True,
     )
-    place_id = Column(
+    user = relationship("User")
+    parking_id = Column(
         INTEGER,
         nullable=False,
         doc="ID of place.",
         unique=True,
     )
-    occupied_from = Column(
-        TIMESTAMP,
-        nullable=False,
-        doc="Start time of reservation.",
-    )
-    occupied_to = Column(
-        TIMESTAMP,
-        nullable=False,
-        doc="End time of reservation.",
-    )
+    parking = relationship("Places", back_populates="reservations")
     payment_method_id = Column(
         UUID(as_uuid=True),
         ForeignKey("payment_method.id", ondelete="CASCADE"),
         nullable=False,
         doc="ID of payment method.",
     )
-
-    payment_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("payment.id", ondelete="CASCADE"),
-        nullable=True,
-        doc="Payment ID.",
+    payment_method = relationship("PaymentMethod")
+    start_time = Column(
+        TIMESTAMP,
+        nullable=False,
+        doc="Start time of reservation.",
+    )
+    end_time = Column(
+        TIMESTAMP,
+        nullable=False,
+        doc="End time of reservation.",
     )

@@ -7,13 +7,13 @@ from .base import BaseTable
 class User(BaseTable):
     __tablename__ = "user"
 
-    username = Column(
-        "username",
+    email = Column(
+        "email",
         TEXT,
         nullable=False,
         unique=True,
         index=True,
-        doc="Username for authentication.",
+        doc="Email.",
     )
     password = Column(
         "password",
@@ -22,17 +22,16 @@ class User(BaseTable):
         index=True,
         doc="Hashed password.",
     )
-    email = Column(
-        "email",
+
+    first_name = Column(
+        "first_name",
         TEXT,
         nullable=True,
-        unique=True,
-        doc="Email for notifications.",
+        doc="User first name.",
     )
-
-    balance = Column(
-        "balance",
-        DECIMAL(asdecimal=True),
-        default=0.0,
-        doc="User balance"
+    last_name = Column(
+        "last_name",
+        TEXT,
+        nullable=True,
+        doc="User last name.",
     )

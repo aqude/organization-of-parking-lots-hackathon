@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 00e24f397d96
+Revision ID: 43232c86fe88
 Revises: 
-Create Date: 2023-11-25 14:05:41.316602
+Create Date: 2023-11-25 16:28:47.915259
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '00e24f397d96'
+revision = '43232c86fe88'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,29 +29,31 @@ def upgrade():
     sa.Column('id', postgresql.UUID(as_uuid=True), server_default=sa.text('gen_random_uuid()'), nullable=False),
     sa.Column('dt_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('dt_updated', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
-    sa.Column('username', sa.TEXT(), nullable=False),
+    sa.Column('email', sa.TEXT(), nullable=False),
     sa.Column('password', sa.TEXT(), nullable=False),
-    sa.Column('email', sa.TEXT(), nullable=True),
-    sa.Column('balance', sa.DECIMAL(), nullable=True),
+    sa.Column('first_name', sa.TEXT(), nullable=True),
+    sa.Column('last_name', sa.TEXT(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk__user')),
-    sa.UniqueConstraint('email', name=op.f('uq__user__email')),
     sa.UniqueConstraint('id', name=op.f('uq__user__id'))
     )
+    op.create_index(op.f('ix__user__email'), 'user', ['email'], unique=True)
     op.create_index(op.f('ix__user__password'), 'user', ['password'], unique=False)
-    op.create_index(op.f('ix__user__username'), 'user', ['username'], unique=True)
     op.create_table('Places',
-    sa.Column('City', sa.TEXT(), nullable=False),
+    sa.Column('id', postgresql.UUID(as_uuid=True), server_default=sa.text('gen_random_uuid()'), nullable=False),
+    sa.Column('dt_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+    sa.Column('dt_updated', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('City_id', sa.INTEGER(), nullable=False),
-    sa.Column('parking_longitude', sa.FLOAT(), nullable=False),
-    sa.Column('parking_latitude', sa.FLOAT(), nullable=False),
-    sa.Column('number_of_place', sa.INTEGER(), nullable=False),
+    sa.Column('parking_longitude', sa.DECIMAL(), nullable=False),
+    sa.Column('parking_latitude', sa.DECIMAL(), nullable=False),
+    sa.Column('number_of_places', sa.INTEGER(), nullable=False),
     sa.Column('price_for_hour', sa.DECIMAL(), nullable=False),
     sa.Column('type_of_parking', sa.TEXT(), nullable=False),
-    sa.Column('status', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['City_id'], ['Cities.city_id'], name=op.f('fk__Places__City_id__Cities')),
-    sa.PrimaryKeyConstraint('City', 'City_id', name=op.f('pk__Places')),
-    postgresql_partition_by='LIST ("City_id")'
+    sa.PrimaryKeyConstraint('id', name=op.f('pk__Places')),
+    sa.UniqueConstraint('id', name=op.f('uq__Places__id'))
     )
+    op.create_index(op.f('ix__Places__parking_latitude'), 'Places', ['parking_latitude'], unique=False)
+    op.create_index(op.f('ix__Places__parking_longitude'), 'Places', ['parking_longitude'], unique=False)
     op.create_table('payment',
     sa.Column('id', postgresql.UUID(as_uuid=True), server_default=sa.text('gen_random_uuid()'), nullable=False),
     sa.Column('dt_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
@@ -86,17 +88,15 @@ def upgrade():
     sa.Column('dt_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('dt_updated', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('place_id', sa.INTEGER(), nullable=False),
-    sa.Column('occupied_from', sa.TIMESTAMP(), nullable=False),
-    sa.Column('occupied_to', sa.TIMESTAMP(), nullable=False),
+    sa.Column('parking_id', sa.INTEGER(), nullable=False),
     sa.Column('payment_method_id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('payment_id', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.ForeignKeyConstraint(['payment_id'], ['payment.id'], name=op.f('fk__reservations__payment_id__payment'), ondelete='CASCADE'),
+    sa.Column('start_time', sa.TIMESTAMP(), nullable=False),
+    sa.Column('end_time', sa.TIMESTAMP(), nullable=False),
     sa.ForeignKeyConstraint(['payment_method_id'], ['payment_method.id'], name=op.f('fk__reservations__payment_method_id__payment_method'), ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], name=op.f('fk__reservations__user_id__user'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('pk__reservations')),
     sa.UniqueConstraint('id', name=op.f('uq__reservations__id')),
-    sa.UniqueConstraint('place_id', name=op.f('uq__reservations__place_id')),
+    sa.UniqueConstraint('parking_id', name=op.f('uq__reservations__parking_id')),
     sa.UniqueConstraint('user_id', name=op.f('uq__reservations__user_id'))
     )
     # ### end Alembic commands ###
@@ -109,9 +109,11 @@ def downgrade():
     op.drop_table('payment_method')
     op.drop_index(op.f('ix__payment__payment_id'), table_name='payment')
     op.drop_table('payment')
+    op.drop_index(op.f('ix__Places__parking_longitude'), table_name='Places')
+    op.drop_index(op.f('ix__Places__parking_latitude'), table_name='Places')
     op.drop_table('Places')
-    op.drop_index(op.f('ix__user__username'), table_name='user')
     op.drop_index(op.f('ix__user__password'), table_name='user')
+    op.drop_index(op.f('ix__user__email'), table_name='user')
     op.drop_table('user')
     op.drop_table('Cities')
     # ### end Alembic commands ###
