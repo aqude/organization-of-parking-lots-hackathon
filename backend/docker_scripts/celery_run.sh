@@ -1,3 +1,3 @@
 #!/bin/bash
-#sleep 30
-#celery -A app.celery worker --loglevel=info
+sleep 15
+celery -A app.celery worker --loglevel=info
