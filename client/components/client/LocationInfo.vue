@@ -8,7 +8,6 @@ watchEffect(() => { if (!focused.value) fullscreen.value = false; })
 
 <template>
     <div class="__location-info" :class="{ details: fullscreen, open: !!focused }">
-        <!-- <div class="rounded-full bg-white opacity-30 w-10 h-1"/> -->
         <div class="flex w-full justify-between">
             <div class="flex flex-col">
                 <p class="text-xl font-semibold">Зона {{ focused?.id }}</p>
