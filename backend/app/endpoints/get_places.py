@@ -25,7 +25,7 @@ async def getplaces(
 ):
     result = list(await get_places(session))
     if not result:
-        raise HTTPException(status_code=status.HTTP_404_BAD_REQUEST, detail="not found")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="not found")
     return result
 
 
