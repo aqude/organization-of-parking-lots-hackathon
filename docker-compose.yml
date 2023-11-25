@@ -5,8 +5,12 @@ services:
     container_name: 'postgres'
     image: 'postgres:14'
     restart: always
-    env_file:
-      - backend/.env
+#    env_file:
+#      - backend/.env
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: hackme
     volumes:
       - ./pg_db:/var/lib/postgresql/data/
     ports:
@@ -27,8 +31,9 @@ services:
       context: backend
     env_file:
       - backend/.env
+
     container_name: fastapi_app
-    command: ["/code/docker_scripts/app_run.sh"]
+    entrypoint: ['bash', '/code/docker_scripts/app_run.sh']
     depends_on:
       - db
     expose:
@@ -74,7 +79,7 @@ services:
     build:
       context: backend
     container_name: celery_app
-    command: [ "/code/docker_scripts/celery_run.sh" ]
+    entrypoint: ['bash', '/code/docker_scripts/app_run.sh']
     env_file:
       - backend/.env
     depends_on:

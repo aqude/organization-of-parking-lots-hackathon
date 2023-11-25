@@ -20,5 +20,6 @@ COPY ./app /code/app
 COPY ./wait-for /code/wait-for
 COPY ./docker_scripts /code/docker_scripts
 
-RUN chmod a+x docker_scripts/*.sh
-RUN chmod a+x wait-for
+RUN chmod a+x /code/docker_scripts/*.sh
+
+
