@@ -1,9 +1,12 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+
+</script>
 
 <template>
     <div class="__methods">
         <div class="method">
-            <hr style="width: 80vw; border-color: white" />
+            <h2></h2>
+            <hr style="width: 95%; opacity: 0.25; border-color: white;" />
         </div>
         <div class="add">
             <h2 class="text-3xl">Добавить метод</h2>
@@ -25,6 +28,15 @@
     border: 1px solid rgb(var(--color-primary-DEFAULT));
     background-color: rgba(0, 0, 0, 0.5);
     padding: 1rem;
+    gap: 1rem;
+
+    .method {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+    }
     .add {
         width: 100%;
         display: flex;
