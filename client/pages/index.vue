@@ -1,22 +1,14 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+
+</script>
 
 <template>
     <div class="__home">
-        <NuxtLink to="/profile">
-            <Icon name="solar:user-bold" class="iconClient" />
-        </NuxtLink>
         <ClientLocationInfo />
         <ClientGoogleMaps />
     </div>
 </template>
 
 <style scoped>
-.iconClient {
-    position: absolute;
-    width: 70px;
-    height: 70px;
-    padding: 10px;
-    z-index: 2;
-    right: 0;
-}
+
 </style>
