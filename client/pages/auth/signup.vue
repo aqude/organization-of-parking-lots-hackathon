@@ -28,13 +28,13 @@ const successfulResponse = ref();
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     const { email, password, first_name, second_name, last_name } = event.data;
     const { data, error } = useAPI("/api/v1/user/registration", {
-        body: {
+        body: JSON.stringify({
           first_name: first_name,
           second_name: second_name,
           last_name: last_name,
           email: email,
           password: password,
-        },
+        }),
         method: "post",
     });
 
