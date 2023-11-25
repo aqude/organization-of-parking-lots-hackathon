@@ -1,12 +1,10 @@
-<script lang="ts" setup>
-
-</script>
+<script lang="ts" setup></script>
 
 <template>
     <div class="__home">
-      <nuxt-link to="/profile">
-        <Icon name="solar:user-bold" class="iconClient"/>
-      </nuxt-link>
+        <NuxtLink to="/profile">
+            <Icon name="solar:user-bold" class="iconClient" />
+        </NuxtLink>
         <ClientLocationInfo />
         <ClientGoogleMaps />
     </div>
@@ -14,11 +12,11 @@
 
 <style scoped>
 .iconClient {
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  padding: 10px;
-  z-index: 2;
-  right: 0;
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    padding: 10px;
+    z-index: 2;
+    right: 0;
 }
 </style>
