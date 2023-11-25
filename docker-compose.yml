@@ -19,13 +19,6 @@ services:
     networks:
       - app-network
 
-  #frontend:
-  #  build:
-  #    context: frontend
-  #  container_name: front
-  #  networks:
-  #    - app-network
-
   backend:
     build:
       context: backend
@@ -53,6 +46,15 @@ services:
       #- frontend
     ports:
       - "80:80"
+    networks:
+      - app-network
+  
+  frontend:
+    build: 
+      context: client
+    ports:
+      - "3000:3000"
+    container_name: frontend
     networks:
       - app-network
 
