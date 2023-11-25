@@ -26,16 +26,18 @@ async def create_payment_method(
     return_url = f"http://127.0.0.1:3000/payment_successful?id={return_id}"
     payment = Payment.create(
         {
-            "amount": {"value": 2.0, "currency": "RUB"},
-            "payment_method_data": {"type": payment_method.type},
+            "amount": {"value": "2.00", "currency": "RUB"},
+            "payment_method_data": {"type": str(payment_method.type)},
             "confirmation": {
                 "type": "redirect",
                 "return_url": return_url,
             },
             "capture": True,
             "save_payment_method": True,
+            "description": "Payment for new method",
         }
     )
+    print(payment)
     new_payment.payment_id = payment.id
     new_payment.is_paid = payment.paid
     new_payment.status = payment.status
@@ -58,7 +60,7 @@ async def confirm_payment(session: AsyncSession, user: User, id: uuid.UUID) -> s
         payment.is_confirmed = True
         new_payment_method = PaymentMethod(
             user_id=user.id,
-            id=payment_info.payment_method.id,
+            method_id=payment_info.payment_method.id,
             title=payment_info.payment_method.title,
             type=payment_info.payment_method.type,
         )
@@ -84,6 +86,11 @@ def create_payment(
 ) -> tuple[Session, DBPayment]:
     return_id = uuid.uuid4()
     new_payment = DBPayment(user_id=user.id, id=return_id, amount=amount)
+    method: PaymentMethod = (
+        session.query(PaymentMethod)
+        .filter(PaymentMethod.id == reservation.payment_method_id)
+        .first()
+    )
     payment = Payment.create(
         {
             "amount": {
@@ -91,7 +98,7 @@ def create_payment(
                 "currency": "RUB",
             },
             "capture": True,
-            "payment_method_id": reservation.payment_method_id,
+            "payment_method_id": method.method_id,
         }
     )
     new_payment.payment_id = payment.id

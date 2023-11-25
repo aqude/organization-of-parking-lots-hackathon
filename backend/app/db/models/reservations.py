@@ -17,7 +17,8 @@ class Reservations(BaseTable):
     )
     user = relationship("User")
     parking_id = Column(
-        INTEGER,
+        UUID(as_uuid=True),
+        ForeignKey("Places.id", ondelete="CASCADE"),
         nullable=False,
         doc="ID of place.",
         unique=True,

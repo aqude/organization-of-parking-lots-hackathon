@@ -11,7 +11,7 @@ class Payments(BaseTable):
         "user_id",
         ForeignKey("user.id", ondelete="CASCADE"),
         nullable=False,
-        doc="ID of user"
+        doc="ID of user",
     )
 
     payment_id = Column(
@@ -19,35 +19,17 @@ class Payments(BaseTable):
         index=True,
         nullable=True,
         unique=True,
-        doc="YooKassa payment ID."
+        doc="YooKassa payment ID.",
     )
 
-    status = Column(
-        String,
-        nullable=False,
-        doc="Payment status."
-    )
+    status = Column(String, nullable=False, doc="Payment status.")
 
-    amount = Column(
-        DECIMAL,
-        nullable=False,
-        doc="Payment amount."
-    )
+    amount = Column(DECIMAL, nullable=False, doc="Payment amount.")
 
-    description = Column(
-        String,
-        nullable=False,
-        doc="Payment description."
-    )
+    description = Column(String, nullable=True, doc="Payment description.")
 
-    is_paid = Column(
-        BOOLEAN,
-        default=False,
-        doc="YooKassa paid status."
-    )
+    is_paid = Column(BOOLEAN, default=False, doc="YooKassa paid status.")
 
     is_confirmed = Column(
-        BOOLEAN,
-        default=False,
-        doc="YooKassa status of confirmation."
+        BOOLEAN, default=False, doc="YooKassa status of confirmation."
     )

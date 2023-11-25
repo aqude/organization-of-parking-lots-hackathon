@@ -2,7 +2,9 @@ from datetime import datetime, timedelta
 
 from fastapi import Depends, HTTPException
 from jose import JWTError, jwt
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from starlette import status
 
 from .database import get_user
@@ -12,11 +14,7 @@ from app.db.models import User, PaymentMethod
 from app.schemas.auth import TokenData
 
 
-async def authenticate_user(
-    session: AsyncSession,
-    email: str,
-    password: str
-):
+async def authenticate_user(session: AsyncSession, email: str, password: str):
     user = await get_user(session, email)
     if not user:
         return False
@@ -34,9 +32,13 @@ def create_access_token(
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.utcnow() + timedelta(
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
     return encoded_jwt
 
 
@@ -58,7 +60,9 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, get_settings().SECRET_KEY, algorithms=[get_settings().ALGORITHM])
+        payload = jwt.decode(
+            token, get_settings().SECRET_KEY, algorithms=[get_settings().ALGORITHM]
+        )
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception

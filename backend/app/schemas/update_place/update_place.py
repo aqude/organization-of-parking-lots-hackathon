@@ -1,11 +1,12 @@
 from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel
+import uuid
 
 
 class UpdatePlaceReq(BaseModel):
-    number_of_place: int
-    time_occupied_from: datetime
+    id: uuid.UUID
     City_id: int
     parking_longitude: Decimal
     parking_latitude: Decimal
+    number_of_places: int

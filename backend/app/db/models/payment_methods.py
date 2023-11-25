@@ -5,12 +5,14 @@ from app.db.models.base import BaseTable
 
 class PaymentMethod(BaseTable):
     __tablename__ = "payment_method"
-
-    type = Column(
-        String,
+    method_id = Column(
+        UUID(as_uuid=True),
+        unique=True,
         nullable=False,
-        doc="Payment method type."
+        doc="Unique index of element (type UUID)",
     )
+
+    type = Column(String, nullable=False, doc="Payment method type.")
 
     user_id = Column(
         UUID(as_uuid=True),
@@ -23,5 +25,5 @@ class PaymentMethod(BaseTable):
         index=True,
         unique=True,
         nullable=False,
-        doc="Payment method title."
+        doc="Payment method title.",
     )

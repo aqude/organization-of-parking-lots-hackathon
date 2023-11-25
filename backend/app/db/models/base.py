@@ -29,7 +29,3 @@ class BaseTable(DeclarativeBase):
         nullable=False,
         doc="Date and time of last update (type TIMESTAMP)",
     )
-
-    def __repr__(self):
-        columns = {column.name: getattr(self, column.name) for column in self.__table__.columns}
-        return f'<{self.__tablename__}: {", ".join(map(lambda x: f"{x[0]}={x[1]}", columns.items()))}>'

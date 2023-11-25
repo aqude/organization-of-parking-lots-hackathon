@@ -16,7 +16,7 @@ fastapi-pagination = "^0.12.4"
 greenlet = "^2.0.2"
 passlib = "^1.7.4"
 psycopg2-binary = "^2.9.3"
-pydantic = {extras=["dotenv", "email"], version="^1.9.1"}
+pydantic = { extras = ["dotenv", "email"], version = "^1.9.1" }
 python-jose = "^3.3.0"
 python-multipart = "^0.0.6"
 SQLAlchemy = "1.4.49"
@@ -25,14 +25,15 @@ starlette = "^0.27.0"
 url-normalize = "^1.4.3"
 uvicorn = "^0.22.0"
 gunicorn = "^21.0.1"
-aiofiles="^23.2.1"
-asgiref="3.7.2"
+aiofiles = "^23.2.1"
+asgiref = "3.7.2"
 cryptography = "41.0.3"
 fastapi-utils = "^0.2.1"
 python-dotenv = "^1.0.0"
 redis = "^4.5.4"
 celery = "^5.2.7"
 yookassa = "^2.5.0"
+pytz = "^2023.3"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
@@ -64,8 +65,8 @@ good-names = ["db"]
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = [
-  "C0114",  # missing-module-docstring
-  "C0116",  # missing-function-docstring
-  "R0903",  # too-few-public-methods (for sqlalchemy tables and pydantic classes)
-  "C0115",  # missing-class-docstring (for api routes)
+  "C0114", # missing-module-docstring
+  "C0116", # missing-function-docstring
+  "R0903", # too-few-public-methods (for sqlalchemy tables and pydantic classes)
+  "C0115", # missing-class-docstring (for api routes)
 ]

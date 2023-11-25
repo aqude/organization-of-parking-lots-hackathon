@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 8fe25fb42431
+Revision ID: 9da2f1cee61c
 Revises: 
-Create Date: 2023-11-25 15:44:00.353681
+Create Date: 2023-11-25 17:28:41.246548
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '8fe25fb42431'
+revision = '9da2f1cee61c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -93,10 +93,11 @@ def upgrade():
     sa.Column('dt_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('dt_updated', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('parking_id', sa.INTEGER(), nullable=False),
+    sa.Column('parking_id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('payment_method_id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('start_time', sa.TIMESTAMP(), nullable=False),
     sa.Column('end_time', sa.TIMESTAMP(), nullable=False),
+    sa.ForeignKeyConstraint(['parking_id'], ['Places.id'], name=op.f('fk__reservations__parking_id__Places'), ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['payment_method_id'], ['payment_method.id'], name=op.f('fk__reservations__payment_method_id__payment_method'), ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], name=op.f('fk__reservations__user_id__user'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('pk__reservations')),

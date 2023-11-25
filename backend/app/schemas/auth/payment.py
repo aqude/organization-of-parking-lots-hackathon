@@ -1,3 +1,4 @@
+import uuid
 from pydantic import BaseModel
 from typing import Literal
 
@@ -19,6 +20,7 @@ class PaymentMethodIn(BaseModel):
 
 
 class PaymentMethodOut(BaseModel):
+    id: uuid.UUID
     type: Literal[
         "bank_card",
         "yoo_money",
