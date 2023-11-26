@@ -1,7 +1,17 @@
 <script lang="ts" setup>
-const add_method = () => {
-    const { data: { value } } = useAPI("/api/v1/user/payment/method/add")
-    console.log(value)
+import { useStorage } from "@vueuse/core";
+const auth_token = useStorage("key", () => undefined);
+const add_method = async () => {
+    const { data, error } = await useAPI("/api/v1/user/payment/method/add", {
+        headers: {
+            Authorization: `Bearer ${auth_token.value}` as unknown as string
+        },
+        body: {
+            type: "bank_card"
+        },
+        method: "post"
+    })
+    console.log(data.value)
 }
 </script>
 

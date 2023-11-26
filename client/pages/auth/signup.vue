@@ -1,56 +1,62 @@
 <script lang="ts" setup>
 import { object, string, type InferType } from "yup";
 import type { FormError, FormSubmitEvent } from "#ui/types";
-import { useStorage } from '@vueuse/core'
+import { useStorage } from "@vueuse/core";
 let requiredField = "Обязательное поле";
 const schema = object({
     email: string().email("Неверный Email").required(requiredField),
     password: string()
         .min(8, "Слишком короткий пароль")
         .required(requiredField),
-  first_name: string().required(requiredField),
-  second_name: string().required(requiredField),
-  last_name: string().required(requiredField),
+    first_name: string().required(requiredField),
+    second_name: string().required(requiredField),
+    last_name: string().required(requiredField),
 });
 
 type Schema = InferType<typeof schema>;
 
 const state = reactive({
-  first_name: undefined,
-  second_name: undefined,
-  last_name: undefined,
-  email: undefined,
-  password: undefined,
+    first_name: undefined,
+    second_name: undefined,
+    last_name: undefined,
+    email: undefined,
+    password: undefined,
 });
 
 const globalError = ref();
 
-const router = useRouter()
+const router = useRouter();
+const auth_token = useStorage("key", () => undefined);
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     const { email, password, first_name, second_name, last_name } = event.data;
     const { data, error } = await useAPI("/api/v1/user/registration", {
         body: {
-          first_name: first_name,
-          second_name: second_name,
-          last_name: last_name,
-          email: email,
-          password: password,
+            first_name: first_name,
+            second_name: second_name,
+            last_name: last_name,
+            email: email,
+            password: password,
         },
         method: "post",
     });
     if (data.value) {
-		  router.push("/auth/login")
+        auth_token.value = (data.value as any).access_token;
+        router.push("/");
     } else {
         switch (error.value?.statusCode) {
             case 422:
                 globalError.value = "Неверный логин или пароль";
+                break;
+            case 409:
+                globalError.value = "Почта не уникальна!";
+                break;
             default:
                 globalError.value = "Произошла неизвестная ошибка...";
         }
     }
 }
-watch(state, () => globalError.value = undefined)
+watch(state, () => (globalError.value = undefined));
 </script>
 
 <template>
@@ -61,22 +67,25 @@ watch(state, () => globalError.value = undefined)
             class="flex flex-col space-y-4 w-80"
             @submit="onSubmit"
         >
-          <div class="flex flex-row justify-between text-xl pt-10">
-            <h1 class="">Регистрация</h1>
-            <nuxt-link to="/auth/login">
-              <h1 style="color: #22C55E" class="">Вход</h1>
-            </nuxt-link>
-          </div>
-          <h2>Пожалуйста, заполните нижеприведённые поля для входа в приложение</h2>
-          <UFormGroup label="Имя" name="first_name">
-            <UInput placeholder="Иван" v-model="state.first_name" />
-          </UFormGroup>
-          <UFormGroup label="Фамилия" name="second_name">
-            <UInput placeholder="Иванов" v-model="state.second_name" />
-          </UFormGroup>
-          <UFormGroup label="Отчество" name="last_name">
-            <UInput placeholder="Иванович" v-model="state.last_name" />
-          </UFormGroup>
+            <div class="flex flex-row justify-between text-xl pt-10">
+                <h1 class="">Регистрация</h1>
+                <nuxt-link to="/auth/login">
+                    <h1 style="color: #22c55e">Вход</h1>
+                </nuxt-link>
+            </div>
+            <h2>
+                Пожалуйста, заполните нижеприведённые поля для входа в
+                приложение
+            </h2>
+            <UFormGroup label="Имя" name="first_name">
+                <UInput placeholder="Иван" v-model="state.first_name" />
+            </UFormGroup>
+            <UFormGroup label="Фамилия" name="second_name">
+                <UInput placeholder="Иванов" v-model="state.second_name" />
+            </UFormGroup>
+            <UFormGroup label="Отчество" name="last_name">
+                <UInput placeholder="Иванович" v-model="state.last_name" />
+            </UFormGroup>
             <UFormGroup label="Email" name="email">
                 <UInput placeholder="example@mail.ru" v-model="state.email" />
             </UFormGroup>
@@ -84,10 +93,16 @@ watch(state, () => globalError.value = undefined)
             <UFormGroup label="Пароль" name="password">
                 <UInput v-model="state.password" type="password" />
             </UFormGroup>
-			<Transition name="error">
-				<p v-show="globalError" class="h-6 text-red-400 mt-4">{{ globalError }}</p>
-			</Transition>
-            <UButton type="submit" class="grid justify-items-center w-80 mx-auto h-10 text-lg">Зарегистрироваться</UButton>
+            <Transition name="error">
+                <p v-show="globalError" class="h-6 text-red-400 mt-4">
+                    {{ globalError }}
+                </p>
+            </Transition>
+            <UButton
+                type="submit"
+                class="grid justify-items-center w-80 mx-auto h-10 text-lg"
+                >Зарегистрироваться</UButton
+            >
         </UForm>
     </div>
 </template>
@@ -106,14 +121,16 @@ watch(state, () => globalError.value = undefined)
     }
 }
 
-.error-enter-active, .error-leave-active {
-	transition: all 0.3s;
+.error-enter-active,
+.error-leave-active {
+    transition: all 0.3s;
 }
-.error-enter-from, .error-leave-to {
-	opacity: 0;
-	height: 0;
-	width: fit-content;
-	margin: 0 !important;
+.error-enter-from,
+.error-leave-to {
+    opacity: 0;
+    height: 0;
+    width: fit-content;
+    margin: 0 !important;
     overflow: hidden;
 }
 </style>

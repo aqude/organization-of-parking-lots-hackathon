@@ -1,5 +1,5 @@
 #!/bin/bash 
-sleep 30 # wait for bd
+sleep 15 # wait for bd
 cd /code/app/db 
 alembic upgrade head
 cd ../../
