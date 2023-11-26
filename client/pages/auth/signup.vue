@@ -40,7 +40,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         method: "post",
     });
     if (data.value) {
-		  router.push("/login")
+		  router.push("/auth/login")
     } else {
         switch (error.value?.statusCode) {
             case 422:
