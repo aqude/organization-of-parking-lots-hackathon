@@ -1,4 +1,4 @@
-# Руководтво по зпуску проекта
+# Руководтво по запуску проекта
 ### Технологии: 
 #### Python, FastAPI, Celery, PostgreSQL
 #### TypeScript, TailWind.css, Nuxt.js
