@@ -16,7 +16,7 @@ const route = useRoute()
             variant="soft"
             class="profile btn"
             to="/profile"
-            :style="{ opacity: route.path === '/profile' ? 0 : 1 }"
+            :style="{ opacity: (route.path === '/profile' || route.path.startsWith('/auth')) ? 0 : 1 }"
         />
     </header>
 </template>

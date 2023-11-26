@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
     devtools: {
-        enabled: true
+        enabled: false
     },
     modules: ["@nuxt/ui", "nuxt-icon"],
     css: [

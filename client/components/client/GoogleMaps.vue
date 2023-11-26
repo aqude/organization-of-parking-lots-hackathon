@@ -1,47 +1,49 @@
 <script setup>
-const locations = ref([
-    {
-        id: 1,
-        position: {
-            lat: 56.84309925140014,
-            lng: 60.645409215528794,
-        },
-        positionName: "",
-    },
-    {
-        id: 2,
-        position: {
-            lat: 56.874319783873304,
-            lng: 60.539462099983076,
-        },
-    },
-    {
-        id: 3,
-        position: {
-            lat: 56.874319783873305,
-            lng: 60.530462099984071,
-        },
-    },
-]);
+const {
+    query: { space },
+} = useRoute();
+const fullscreen_mode = useState("fullscreen_mode", () => false);
+const locations = ref([]);
 const zoom = ref(12);
 const center = ref({ lat: 56.8719851050808, lng: 60.60462041671509 });
 
-const focusedMarker = useState("global_marker", () => {})
+const focusedMarker = useState("global_marker", () => {});
 
 const focusOnMarker = (marker) => {
-    center.value = marker.position;
+    center.value = {
+        lat: marker.parking_latitude,
+        lng: marker.parking_longitude,
+    };
     zoom.value = 15;
-    focusedMarker.value = marker
+    if (marker.number_of_places <= 0) return
+    focusedMarker.value = marker;
 };
 let gmapOptions = {
-  zoomControl: false,
-  mapTypeControl: false,
-  scaleControl: false,
-  streetViewControl: false,
-  rotateControl: true,
-  fullscreenControl: false,
-}
+    zoomControl: false,
+    mapTypeControl: false,
+    scaleControl: false,
+    streetViewControl: false,
+    rotateControl: true,
+    fullscreenControl: false,
+};
 
+onMounted(async () => {
+    setTimeout(async () => {
+        const { data, error } = await useAPI("/api/v1/get_places");
+        await data
+        locations.value = data.value;
+        if (space) {
+            locations.value.forEach((location) => {
+                if (location.id === space) {
+                    setTimeout(() => {
+                        focusOnMarker(location);
+                        fullscreen_mode.value = true;
+                    }, 1000);
+                }
+            });
+        }
+    }, 1000);
+});
 </script>
 <template>
     <ClientOnly>
@@ -51,15 +53,19 @@ let gmapOptions = {
             :center="center"
             map-type-id="roadmap"
             :zoom="zoom"
-            :options="gmapOptions">
+            :options="gmapOptions"
+        >
             <GMapCluster :zoomOnClick="true">
                 <GMapMarker
                     v-for="(marker, index) in locations"
                     :key="index"
-                    :position="marker.position"
+                    :position="{
+                        lat: marker.parking_latitude,
+                        lng: marker.parking_longitude,
+                    }"
                     :clickable="true"
                     :icon="{
-                        url: `/images/dot_green.png`, // There is also dot_grey.png for unknown and dot_red.png for occupied spaces
+                        url: `/images/dot_${marker.number_of_places > 0 ? 'green' : 'red'}.png`,
                         scaledSize: { width: 20, height: 20 },
                         labelOrigin: { x: 16, y: 0 },
                     }"

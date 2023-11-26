@@ -10,6 +10,5 @@ export const useAPI = async (request: ArgumentTypes<typeof useFetch>[0], opts?: 
 		body: opts ? (body_process ? new URLSearchParams(Object.entries(opts.body as any)).toString() : opts.body) : undefined,
 		headers: opts ? { ...opts.headers, ...customHeaders } : undefined,
 	};
-	console.log(mergedOpts)
 	return await useFetch(`http://localhost${request}`, mergedOpts ? mergedOpts : undefined);
 };
