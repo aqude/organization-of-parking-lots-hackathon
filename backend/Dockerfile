@@ -17,6 +17,7 @@ COPY --from=requirements-stage /fastapi_app/requirements.txt /code/requirements.
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app
+COPY ./init_db.py /code
 COPY ./wait-for /code/wait-for
 COPY ./docker_scripts /code/docker_scripts
 
