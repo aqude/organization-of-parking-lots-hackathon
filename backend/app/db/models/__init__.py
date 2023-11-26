@@ -4,6 +4,7 @@ from .cities import Cities
 from .payments import Payments
 from .payment_methods import PaymentMethod
 from .reservations import Reservations
+from .review import Review
 
 
 __all__ = [
@@ -12,5 +13,6 @@ __all__ = [
     "Cities",
     "Payments",
     "PaymentMethod",
-    "Reservations"
+    "Reservations",
+    "Review",
 ]

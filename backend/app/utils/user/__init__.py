@@ -5,6 +5,7 @@ from .business_logic import (
     verify_password,
     get_current_user,
     get_payment_methods,
+    get_user_by_id
 )
 
 
@@ -17,4 +18,5 @@ __all__ = [
     "get_current_user",
     "delete_user",
     "get_payment_methods",
+    "get_user_by_id",
 ]
