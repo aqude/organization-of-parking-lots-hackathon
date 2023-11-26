@@ -10,15 +10,14 @@ const {
 } = useRoute();
 const payment_id = useStorage("payment_id_in_proccess", () => undefined);
 const parking_space = useStorage("parking_space_in_proccess", () => undefined);
-const { data, error, status } = await useAPI(
-    `/api/v1/user/payment/method/check/${id}`,
+const res = await fetch(
+    `http://localhost/api/v1/user/payment/method/check/${id}`,
     {
         headers: {
             Authorization: `Bearer ${auth_token.value}` as unknown as string,
         },
     }
 );
-
 payment_id.value = id as any;
 setTimeout(() => {
     router.push(`/?space=${parking_space.value as any}`);
