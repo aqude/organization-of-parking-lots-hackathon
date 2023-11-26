@@ -24,7 +24,7 @@ async def getplaces(_: Request, session: AsyncSession = Depends(get_session)):
     result = list(await get_places(session))
     if not result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="not found")
-    return result
+    return [PlacesOut(**item.__dict__) for item in result]
 
 
 @api_router.post(
@@ -66,8 +66,4 @@ async def get_places_radius(
     ),
 ):
     result = list(await get_places_in_radius(session, data, get_settings()))
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data"
-        )
     return [PlacesOut(**item.__dict__) for item in result]

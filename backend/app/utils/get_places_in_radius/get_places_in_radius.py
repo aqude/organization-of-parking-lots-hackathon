@@ -21,8 +21,8 @@ async def get_places_in_radius(session: AsyncSession, data: GetPlacesRadReq, set
     deltalat = await computeDelta(data.lat, settings.EART_RADIUS)
     deltalon = await computeDelta(data.lon, settings.EART_RADIUS)
 
-    aroundlat = data.radius / (deltalat * 10)
-    aroundlon = data.radius / (deltalon * 10)
+    aroundlat = data.radius * 2 / (deltalat * 10)
+    aroundlon = data.radius * 2 / (deltalon * 10)
 
     query = select(Places).where(Places.City_id == data.City_id).filter(
         and_(
@@ -31,6 +31,4 @@ async def get_places_in_radius(session: AsyncSession, data: GetPlacesRadReq, set
         )
     )
     result = await session.scalars(query)
-    if not result:
-        return None
     return result
