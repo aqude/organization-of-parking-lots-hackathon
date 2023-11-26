@@ -27,7 +27,7 @@ celery_app = Celery(
 
 celery_app.conf.beat_schedule = {
     "confirm_payments": {
-        "task": "app.worker.confirm_payments",
+        "task": "app.worker.check_reservations",
         "schedule": crontab(minute="*/1"),
     },
 }
