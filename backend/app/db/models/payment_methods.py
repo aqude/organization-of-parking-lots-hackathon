@@ -7,7 +7,6 @@ class PaymentMethod(BaseTable):
     __tablename__ = "payment_method"
     method_id = Column(
         UUID(as_uuid=True),
-        unique=True,
         nullable=False,
         doc="Unique index of element (type UUID)",
     )
