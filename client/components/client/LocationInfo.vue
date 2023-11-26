@@ -66,7 +66,7 @@ const crv = computed(() => {
     return reservations.value[focused.value.id];
 });
 const hours_crv = () => {
-    return (Date.now() - Date.parse(crv.value.start_time)) / 1000 / 3600 + 6;
+    return (Date.now() - Date.parse(crv.value.start_time)) / 1000 / 3600 - 3;
 };
 
 const refreshing_pay = ref(false);
