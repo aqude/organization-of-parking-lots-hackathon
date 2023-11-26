@@ -19,3 +19,4 @@ class RegistrationForm(BaseModel):
 
 class RegistrationSuccess(BaseModel):
     message: str
+    access_token: str

@@ -1,8 +1,9 @@
 from sqlalchemy import delete, exc, select
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from starlette.status import HTTP_409_CONFLICT
 from app.db.models import User
 from app.schemas.auth import RegistrationForm
+from fastapi import HTTPException
 
 
 async def get_user(session: AsyncSession, email: str) -> User | None:
@@ -16,8 +17,8 @@ async def register_user(session: AsyncSession, potential_user: RegistrationForm)
     try:
         await session.commit()
     except exc.IntegrityError:
-        return False, "Username already exists."
-    return True, "Successful registration!"
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail="User with provided email already exists")
+    return True, "Successful registration!", user.email
 
 
 async def delete_user(session: AsyncSession, email: str) -> None:

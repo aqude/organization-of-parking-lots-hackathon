@@ -75,9 +75,11 @@ async def registration(
     registration_form: RegistrationForm = Body(...),
     session: AsyncSession = Depends(get_session),
 ):
-    is_success, message = await register_user(session, registration_form)
+    is_success, message, email = await register_user(session, registration_form)
     if is_success:
-        return {"message": message}
+        access_token_expires = timedelta(minutes=get_settings().ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(data={"sub": email}, expires_delta=access_token_expires)
+        return {"message": message, "access_token": access_token}
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=message,
