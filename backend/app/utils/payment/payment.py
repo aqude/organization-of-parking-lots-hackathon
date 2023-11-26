@@ -63,6 +63,8 @@ async def confirm_payment(session: AsyncSession, user: User, id: uuid.UUID) -> s
             title=payment_info.payment_method.title,
             type=payment_info.payment_method.type,
         )
+        session.add(new_payment_method)
+        await session.commit()
         refund = Refund.create(
             {
                 "amount": {"value": "2.00", "currency": "RUB"},
@@ -71,7 +73,6 @@ async def confirm_payment(session: AsyncSession, user: User, id: uuid.UUID) -> s
         )
         if refund.status == "canceled":
             response = "Refund canceled: " + refund.cancellation_details.reason
-        session.add(new_payment_method)
     elif payment_info.status == "succeeded" and payment.is_confirmed:
         response = "Payment confirmed"
     else:
