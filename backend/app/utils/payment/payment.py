@@ -54,9 +54,8 @@ async def confirm_payment(session: AsyncSession, user: User, id: uuid.UUID) -> s
     if payment.user_id != user.id:
         raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Forbidden")
     payment_info = Payment.find_one(str(payment.payment_id))
-    if payment_info.status == "succeeded":
+    if payment_info.status == "succeeded" and not payment.is_confirmed:
         response = "Payment confirmed"
-        user.balance += payment.amount
         payment.is_confirmed = True
         new_payment_method = PaymentMethod(
             user_id=user.id,
@@ -73,6 +72,8 @@ async def confirm_payment(session: AsyncSession, user: User, id: uuid.UUID) -> s
         if refund.status == "canceled":
             response = "Refund canceled: " + refund.cancellation_details.reason
         session.add(new_payment_method)
+    elif payment_info.status == "succeeded" and payment.is_confirmed:
+        response = "Payment confirmed"
     else:
         response = "Payment is still pending"
     payment.status = payment_info.status

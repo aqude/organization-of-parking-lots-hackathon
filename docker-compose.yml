@@ -81,7 +81,7 @@ services:
     build:
       context: backend
     container_name: celery_app
-    entrypoint: ['bash', '/code/docker_scripts/app_run.sh']
+    entrypoint: ['bash', '/code/docker_scripts/celery_run.sh']
     env_file:
       - backend/.env
     depends_on:
