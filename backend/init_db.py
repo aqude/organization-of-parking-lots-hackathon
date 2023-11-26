@@ -1117,42 +1117,41 @@ if len(db.query(Cities).all()) == 0:
     db.execute(cities)
     db.commit()
 
-if len(db.query(Places).all()) == 0:
 
     # Случайные долгота и широта для Санкт-Петербурга (границы города)
-    min_longitude, max_longitude = 60.5, 60.8
-    min_latitude, max_latitude = 56.8, 57.0
+min_longitude, max_longitude = 60.5, 60.8
+min_latitude, max_latitude = 56.8, 57.0
 
-    # Список возможных описаний
-    descriptions = [
-        "Удобная парковка рядом с центром города.",
-        "Безопасное место для вашего автомобиля.",
-        "Широкие места и доступное ценообразование.",
-        "Прекрасный вид и удобный подъезд.",
-        "Рядом с торговым центром и ресторанами.",
-    ]
+# Список возможных описаний
+descriptions = [
+    "Удобная парковка рядом с центром города.",
+    "Безопасное место для вашего автомобиля.",
+    "Широкие места и доступное ценообразование.",
+    "Прекрасный вид и удобный подъезд.",
+    "Рядом с торговым центром и ресторанами.",
+]
 
-    # Список возможных улиц
-    streets = [
-        "Улица Ленина",
-        "Проспект Ленина",
-        "Улица Кирова",
-        "Проспект Волгоградский",
-        "Улица Гагарина",
-    ]
+# Список возможных улиц
+streets = [
+    "Улица Ленина",
+    "Проспект Ленина",
+    "Улица Кирова",
+    "Проспект Волгоградский",
+    "Улица Гагарина",
+]
 
-    parkings = []
+parkings = []
 
-    for _ in range(50):
-        parking = {
-            "City_id": 276,
-            "parking_longitude": round(random.uniform(min_longitude, max_longitude), 6),
-            "parking_latitude": round(random.uniform(min_latitude, max_latitude), 6),
-            "number_of_places": random.randint(10, 50),
-            "price": round(random.uniform(50, 300), 2),
-            "description": random.choice(descriptions),
-            "street_name": random.choice(streets),
-        }
-        new_place = Places(**parking)
-        db.add(new_place)
-    db.commit()
+for _ in range(50):
+    parking = {
+        "City_id": 276,
+        "parking_longitude": round(random.uniform(min_longitude, max_longitude), 6),
+        "parking_latitude": round(random.uniform(min_latitude, max_latitude), 6),
+        "number_of_places": random.randint(10, 50),
+        "price": round(random.uniform(50, 300), 2),
+        "description": random.choice(descriptions),
+        "street_name": random.choice(streets),
+    }
+    new_place = Places(**parking)
+    db.add(new_place)
+db.commit()
