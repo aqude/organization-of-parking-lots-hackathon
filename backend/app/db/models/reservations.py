@@ -13,7 +13,6 @@ class Reservations(BaseTable):
         ForeignKey("user.id", ondelete="CASCADE"),
         nullable=False,
         doc="ID of user.",
-        unique=True,
     )
     user = relationship("User")
     parking_id = Column(
@@ -21,7 +20,6 @@ class Reservations(BaseTable):
         ForeignKey("Places.id", ondelete="CASCADE"),
         nullable=False,
         doc="ID of place.",
-        unique=True,
     )
     parking = relationship("Places", back_populates="reservations")
     payment_method_id = Column(

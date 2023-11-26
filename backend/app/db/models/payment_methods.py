@@ -19,6 +19,7 @@ class PaymentMethod(BaseTable):
         ForeignKey("user.id", ondelete="CASCADE"),
         nullable=False,
         doc="ID of user.",
+        primary_key=True
     )
     title = Column(
         String(100),
