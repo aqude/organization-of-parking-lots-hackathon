@@ -1120,37 +1120,38 @@ if len(db.query(Cities).all()) == 0:
 if len(db.query(Places).all()) == 0:
 
     # Случайные долгота и широта для Санкт-Петербурга (границы города)
-    spb_longitude_range = (30.1107, 30.5281)  # долгота
-    spb_latitude_range = (59.8219, 60.0961)   # широта
+    min_longitude, max_longitude = 60.5, 60.8
+    min_latitude, max_latitude = 56.8, 57.0
 
-    # Случайные описания, адреса и стоимость
+    # Список возможных описаний
     descriptions = [
-        "Отличная парковка рядом с центром",
-        "Просторное место для автомобилей",
-        "Удобное расположение, легко найти",
-        "Безопасная зона для стоянки",
-        "Парковка с видом на набережную",
+        "Удобная парковка рядом с центром города.",
+        "Безопасное место для вашего автомобиля.",
+        "Широкие места и доступное ценообразование.",
+        "Прекрасный вид и удобный подъезд.",
+        "Рядом с торговым центром и ресторанами.",
     ]
 
-    addresses = [
-        "ул. Петровская, д. 10",
-        "пр. Невский, д. 25",
-        "пл. Восстания, д. 5",
-        "пр. Лиговский, д. 18",
-        "наб. реки Фонтанки, д. 7",
+    # Список возможных улиц
+    streets = [
+        "Улица Ленина",
+        "Проспект Ленина",
+        "Улица Кирова",
+        "Проспект Волгоградский",
+        "Улица Гагарина",
     ]
 
-    # Генерация 100 парковок
     parkings = []
-    for _ in range(100):
+
+    for _ in range(50):
         parking = {
-            "City_id": 838,
-            "parking_longitude": round(random.uniform(*spb_longitude_range), 6),
-            "parking_latitude": round(random.uniform(*spb_latitude_range), 6),
+            "City_id": 276,
+            "parking_longitude": round(random.uniform(min_longitude, max_longitude), 6),
+            "parking_latitude": round(random.uniform(min_latitude, max_latitude), 6),
             "number_of_places": random.randint(10, 50),
             "price": round(random.uniform(50, 300), 2),
             "description": random.choice(descriptions),
-            "street_name": random.choice(addresses),
+            "street_name": random.choice(streets),
         }
         new_place = Places(**parking)
         db.add(new_place)
