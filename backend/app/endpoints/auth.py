@@ -15,6 +15,7 @@ from app.schemas.auth import (
     Token,
     PaymentMethodIn,
     PaymentMethodOut,
+    PaymentOut
 )
 from app.schemas.auth import User as UserSchema
 from app.schemas.auth import UserAuth
@@ -27,7 +28,7 @@ from app.utils.user import (
     get_payment_methods,
 )
 from app.utils.payment.payment import confirm_payment
-from app.utils.payment import create_payment_method
+from app.utils.payment import create_payment_method, get_payments
 
 
 api_router = APIRouter(
@@ -169,3 +170,14 @@ async def get_payment_method(
         PaymentMethodOut(type=item.type, title=item.title, id=item.id)
         for item in result
     ]
+
+
+@api_router.get(
+    "/payment/list",
+    status_code=status.HTTP_200_OK,
+    response_model = list[PaymentOut]
+)
+async def get_user_payments(current_user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    result = await get_payments(session, current_user)
+    print(result)
+    return [PaymentOut(**item.__dict__) for item in result]

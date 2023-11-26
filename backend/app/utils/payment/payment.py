@@ -107,3 +107,9 @@ def create_payment(
     new_payment.status = payment.status
     session.add(new_payment)
     return session, new_payment
+
+
+async def get_payments(session: AsyncSession, user: User):
+    query = select(DBPayment).where(DBPayment.user_id == user.id).order_by(DBPayment.dt_created)
+    payments = await session.scalars(query)
+    return list(payments)[::-1]
