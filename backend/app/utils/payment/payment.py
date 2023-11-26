@@ -23,7 +23,7 @@ async def create_payment_method(
 ) -> str:
     return_id = uuid.uuid4()
     new_payment = DBPayment(user_id=user.id, id=return_id, amount=2)
-    return_url = f"http://127.0.0.1:3001/payment_successful?id={return_id}"
+    return_url = f"http://localhost/payment_successful?id={return_id}"
     payment = Payment.create(
         {
             "amount": {"value": "2.00", "currency": "RUB"},
