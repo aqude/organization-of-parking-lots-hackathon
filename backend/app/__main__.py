@@ -51,6 +51,7 @@ def get_app() -> FastAPI:
 
 
 app = get_app()
+<<<<<<< Updated upstream
 origins = []
 app.add_middleware(
     CORSMiddleware,
@@ -59,6 +60,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+=======
+# origins = ["http://127.0.0.1:3000", "http://localhost:3000", "http://localhost:8000", "http://localhost", "http://localhost:3001", "http://127.0.0.1:3001"]
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+>>>>>>> Stashed changes
 
 
 if __name__ == "__main__":
